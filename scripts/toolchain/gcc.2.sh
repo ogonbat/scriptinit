@@ -28,11 +28,11 @@ case $(uname -m) in
 esac
 
 
-tar -xf ../mpfr-3.1.5.tar.xz
+tar -xf $LFS/sources/mpfr-3.1.5.tar.xz
 mv -v mpfr-3.1.5 mpfr
-tar -xf ../gmp-6.1.2.tar.xz
+tar -xf $LFS/sources/gmp-6.1.2.tar.xz
 mv -v gmp-6.1.2 gmp
-tar -xf ../mpc-1.0.3.tar.gz
+tar -xf $LFS/sources/mpc-1.0.3.tar.gz
 mv -v mpc-1.0.3 mpc
 
 mkdir -v build

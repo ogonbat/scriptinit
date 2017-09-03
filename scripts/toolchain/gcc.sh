@@ -4,11 +4,11 @@ tar -xf $LFS/sources/gcc-7.2.0.tar.xz -C $LFS/sources
 
 cd $LFS/sources/gcc-7.2.0
 
-tar -xf ../mpfr-3.1.5.tar.xz
+tar -xf $LFS/sources/mpfr-3.1.5.tar.xz
 mv -v mpfr-3.1.5 mpfr
-tar -xf ../gmp-6.1.2.tar.xz
+tar -xf $LFS/sources/gmp-6.1.2.tar.xz
 mv -v gmp-6.1.2 gmp
-tar -xf ../mpc-1.0.3.tar.gz
+tar -xf $LFS/sources/mpc-1.0.3.tar.gz
 mv -v mpc-1.0.3 mpc
 
 for file in gcc/config/{linux,i386/linux{,64}}.h

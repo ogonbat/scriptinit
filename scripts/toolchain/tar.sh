@@ -4,7 +4,7 @@ tar -xf $LFS/sources/tar-1.29.tar.xz -C $LFS/sources
 
 cd $LFS/sources/tar-1.29
 
-./configure --prefix=/tools
+FORCE_UNSAFE_CONFIGURE=1 ./configure --prefix=/tools
 
 make
 

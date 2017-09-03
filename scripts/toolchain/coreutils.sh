@@ -4,9 +4,9 @@ tar -xf $LFS/sources/coreutils-8.27.tar.xz -C $LFS/sources
 
 cd $LFS/sources/coreutils-8.27
 
-./configure --prefix=/tools --enable-install-program=hostname
+FORCE_UNSAFE_CONFIGURE=1  ./configure --prefix=/tools --enable-install-program=hostname
 
-make
+FORCE_UNSAFE_CONFIGURE=1 make
 
 make install
 

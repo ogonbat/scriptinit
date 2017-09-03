@@ -13,3 +13,5 @@ make install
 cd $LFS/sources
 
 rm -Rf bison-3.0.4
+
+cd $MRX

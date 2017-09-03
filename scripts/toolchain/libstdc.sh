@@ -25,3 +25,5 @@ make install
 cd $LFS/sources
 
 rm -Rf gcc-7.2.0
+
+cd $MRX

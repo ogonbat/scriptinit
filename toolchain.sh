@@ -2,6 +2,7 @@
 
 mkdir $PWD/build
 
+export MRX=$PWD
 export LFS=$PWD/build
 
 mkdir -v $LFS/sources
@@ -68,3 +69,42 @@ source ./scripts/toolchain/bash.sh
 
 echo "Install Bison"
 source ./scripts/toolchain/bison.sh
+
+echo "Install Bzip2"
+source ./scripts/toolchain/bzip.sh
+
+echo "Install Coreutils"
+source ./scripts/toolchain/coreutils.sh
+
+echo "Install Diffutils"
+source ./scripts/toolchain/diffutils.sh
+
+echo "Install File"
+source ./scripts/toolchain/file.sh
+
+echo "Install Findutils"
+source ./scripts/toolchain/findutils.sh
+
+echo "Install Gawk"
+source ./scripts/toolchain/gawk.sh
+
+echo "Install Gettext"
+source ./scripts/toolchain/gettext.sh
+
+echo "Install Grep"
+source ./scripts/toolchain/grep.sh
+
+echo "Install Gzip"
+source ./scripts/toolchain/gzip.sh
+
+echo "Install M4"
+source ./scripts/toolchain/m4.sh
+
+echo "Install Make"
+source ./scripts/toolchain/make.sh
+
+echo "Install Patch"
+source ./scripts/toolchain/patch.sh
+
+echo "Install Perl"
+source ./scripts/toolchain/perl.sh

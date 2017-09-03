@@ -20,3 +20,5 @@ make install
 cd $LFS/sources
 
 rm -Rf ncurses-6.0
+
+cd $MRX

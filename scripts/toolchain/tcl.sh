@@ -20,3 +20,5 @@ ln -sv tclsh8.6 /tools/bin/tclsh
 cd $LFS/sources
 
 rm -Rf tcl8.6.7
+
+cd $MRX

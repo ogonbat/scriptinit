@@ -13,3 +13,5 @@ make install
 cd $LFS/sources
 
 rm -Rf check-0.11.0
+
+cd $MRX

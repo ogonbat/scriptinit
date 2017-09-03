@@ -29,3 +29,5 @@ cp -v ld/ld-new /tools/bin
 cd $LFS/sources
 
 rm -Rf binutils-2.29
+
+cd $MRX

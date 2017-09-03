@@ -9,3 +9,5 @@ make PREFIX=/tools install
 cd $LFS/sources
 
 rm -Rf bzip2-1.0.6
+
+cd $MRX

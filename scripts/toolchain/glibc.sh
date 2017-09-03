@@ -33,3 +33,5 @@ rm -v dummy.c a.out
 cd $LFS/sources
 
 rm -Rf glibc-2.26
+
+cd $MRX

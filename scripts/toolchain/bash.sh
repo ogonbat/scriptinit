@@ -15,3 +15,5 @@ ln -sv bash /tools/bin/sh
 cd $LFS/sources
 
 rm -Rf bash-4.4
+
+cd $MRX

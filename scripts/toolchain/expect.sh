@@ -18,3 +18,5 @@ make SCRIPTS="" install
 cd $LFS/sources
 
 rm -Rf expect5.45
+
+cd $MRX

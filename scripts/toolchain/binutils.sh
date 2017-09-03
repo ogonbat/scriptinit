@@ -26,3 +26,5 @@ make install
 cd $LFS/sources
 
 rm -Rf binutils-2.29
+
+cd $MRX

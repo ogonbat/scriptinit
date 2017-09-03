@@ -13,3 +13,5 @@ make install
 cd $LFS/sources
 
 rm -Rf dejagnu-1.6
+
+cd $MRX

@@ -68,3 +68,5 @@ rm -Rf mpfr
 rm -Rf gmp
 rm -Rf mpc
 
+cd $MRX
+

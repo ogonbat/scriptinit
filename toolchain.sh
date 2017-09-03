@@ -108,3 +108,28 @@ source ./scripts/toolchain/patch.sh
 
 echo "Install Perl"
 source ./scripts/toolchain/perl.sh
+
+echo "Install Sed"
+source ./scripts/toolchain/sed.sh
+
+echo "Install Tar"
+source ./scripts/toolchain/tar.sh
+
+echo "Install Texinfo"
+source ./scripts/toolchain/texinfo.sh
+
+echo "Install Util Linux"
+source ./scripts/toolchain/utillinux.sh
+
+echo "Install XZ"
+source ./scripts/toolchain/xz.sh
+
+
+echo "Stripping"
+
+strip --strip-debug /tools/lib/*
+/usr/bin/strip --strip-unneeded /tools/{,s}bin/*
+
+rm -rf /tools/{,share}/{info,man,doc}
+
+echo "Complete"

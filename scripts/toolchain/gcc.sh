@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf gcc-7.2.0.tar.xz -C $LFS/sources
+tar -xf $LFS/sources/gcc-7.2.0.tar.xz -C $LFS/sources
 
-cd gcc-7.2.0
+cd $LFS/sources/gcc-7.2.0
 
 tar -xf ../mpfr-3.1.5.tar.xz
 mv -v mpfr-3.1.5 mpfr

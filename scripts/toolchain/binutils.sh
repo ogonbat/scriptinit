@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf binutils-2.29.tar.bz2 -C $LFS/sources
+tar -xf $LFS/sources/binutils-2.29.tar.bz2 -C $LFS/sources
 
-cd binutils-2.29
+cd $LFS/sources/binutils-2.29
 
 mkdir -v build
 cd       build

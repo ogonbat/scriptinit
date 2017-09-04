@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/btrfs-progs-v4.10.2.tar.xz"
+MD5SUMLIST="f02817482466d40dabfa08534da42ec9"
+REQUIRES="asciidoc lzo xmlto"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i '1,100 s/\.gz//g' Documentation/Makefile.in
+
+./configure --prefix=/usr \
+            --bindir=/bin \
+            --libdir=/lib
+make
+
+# (*) Don't run test suites
+#mv tests/fuzz-tests/001-simple-check-unmounted/test.sh{,.broken}
+#mv tests/fuzz-tests/003-multi-check-unmounted/test.sh{,.broken}
+#mv tests/fuzz-tests/007-simple-super-recover/test.sh{,.broken}
+#mv tests/fuzz-tests/009-simple-zero-log/test.sh{,.broken}
+#mv tests/mkfs-tests/005-long-device-name-for-ssd/test.sh{,.broken}
+#mv tests/misc-tests/019-receive-clones-on-munted-subvol/test.sh{,.broken}
+
+# (*) Don't run test suites
+#pushd tests
+#   ./fsck-tests.sh
+#   ./mkfs-tests.sh
+#   ./convert-tests.sh
+#   ./misc-tests.sh
+#   ./cli-tests.sh
+#   ./fuzz-tests.sh
+#popd
+
+make DESTDIR=${FAKEROOT} install
+
+ln -sfv ../../lib/$(readlink ${FAKEROOT}/lib/libbtrfs.so) ${FAKEROOT}/usr/lib/libbtrfs.so
+rm -v ${FAKEROOT}/lib/libbtrfs.{a,so}
+
+#################
+} # END OF FILE #
+#################
+

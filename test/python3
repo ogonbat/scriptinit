@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tar.xz
+          https://docs.python.org/3.6/archives/python-3.6.1-docs-html.tar.bz2"
+MD5SUMLIST="692b4fc3a2ba0d54d1495d4ead5b0b5c
+            8981662bf1f60d277f082b49481b9fc1"
+POSTINST="now"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+CXX="/usr/bin/g++"              \
+./configure --prefix=/usr       \
+            --enable-shared     \
+            --with-system-expat \
+            --with-system-ffi   \
+            --with-ensurepip=yes
+make
+
+make DESTDIR=${FAKEROOT} install
+chmod -v 755 ${FAKEROOT}/usr/lib/libpython3.6m.so
+chmod -v 755 ${FAKEROOT}/usr/lib/libpython3.so
+
+install -v -dm755 ${FAKEROOT}/usr/share/doc/python-3.6.1/html
+tar --strip-components=1 \
+    --no-same-owner \
+    --no-same-permissions \
+    -C ${FAKEROOT}/usr/share/doc/python-3.6.1/html \
+    -xvf ../python-3.6.1-docs-html.tar.bz2
+
+cat > ${FAKEROOT}/etc/profile.d/python3.sh << "EOF"
+export PYTHONDOCS=/usr/share/doc/python-3/html
+EOF
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+ln -svfn python-3.6.1 /usr/share/doc/python-3
+
+#################
+} # END OF FILE #
+#################
+

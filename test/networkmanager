@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.gnome.org/pub/gnome/sources/NetworkManager/1.6/NetworkManager-1.6.2.tar.xz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="89c975afe19fbac854191edb6e9bcd3b
+            b4f1623b69c67f10e67ca610ceee56b4"
+REQUIRES="dbus-glib gtk-doc iptables libgudev libndp libnl newt nss pygobject3"
+RECOMMENDS="dhcpcd gobject-introspection"
+POSTINST="now"
+
+# (*) Install 'dhcpcd' because it is required for DHCP functionality
+# (*) Install 'gobject-introspection' because it is required to build network-manager-applet
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -e '/Qt[CDN]/s/Qt/Qt5/g'       \
+    -e 's/moc_location/host_bins/' \
+    -i configure
+
+CXXFLAGS="-O2 -fPIC"                       \
+./configure --prefix=/usr                  \
+            --sysconfdir=/etc              \
+            --localstatedir=/var           \
+            --with-nmtui                   \
+            --disable-ppp                  \
+            --disable-json-validation      \
+            --with-systemdsystemunitdir=no \
+            --docdir=/usr/share/doc/network-manager-1.6.2
+make
+
+make DESTDIR=${FAKEROOT} install
+
+cat >> ${FAKEROOT}/etc/NetworkManager/NetworkManager.conf << "EOF"
+[main]
+plugins=keyfile
+EOF
+
+cat > ${FAKEROOT}/usr/share/polkit-1/rules.d/org.freedesktop.NetworkManager.rules << "EOF"
+polkit.addRule(function(action, subject) {
+    if (action.id.indexOf("org.freedesktop.NetworkManager.") == 0 && subject.isInGroup("netdev")) {
+        return polkit.Result.YES;
+    }
+});
+EOF
+
+includeBootscript networkmanager
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+groupadd -fg 86 netdev
+
+# (*) Example configuration
+#/usr/sbin/usermod -a -G netdev <username>
+
+#################
+} # END OF FILE #
+#################
+

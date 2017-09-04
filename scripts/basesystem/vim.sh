@@ -2,7 +2,7 @@
 
 tar -xf /sources/vim-8.0.586.tar.bz2 -C /sources
 
-cd /sources/vim-8.0.586
+cd /sources/vim80
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 sed -i '/call/{s/split/xsplit/;s/303/492/}' src/testdir/test_recover.vim
 
@@ -38,6 +38,6 @@ touch ~/.vimrc
 
 cd /sources
 
-rm -Rf vim-8.0.586
+rm -Rf vim80
 
 cd /scripts

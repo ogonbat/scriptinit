@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
-
 echo "Install Libtool"
 source libtool.sh
 

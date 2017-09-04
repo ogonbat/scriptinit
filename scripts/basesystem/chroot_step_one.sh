@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/tools/bin/env bash
 
 echo "Create Directories"
 

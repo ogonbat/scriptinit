@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/tools/bin/env bash
 
 rm -f /usr/lib/lib{bfd,opcodes}.a
 rm -f /usr/lib/libbz2.a

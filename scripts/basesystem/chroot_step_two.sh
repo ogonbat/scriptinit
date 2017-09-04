@@ -1,5 +1,9 @@
 #!/tools/bin/env bash
 
+set -e
+trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
+trap 'echo FAILED COMMAND: $previous_command' EXIT
+
 echo "Install Libtool"
 source libtool.sh
 
@@ -148,6 +152,8 @@ unset LIB save_lib save_usrlib
 
 rm -rf /tmp/*
 
+
+trap - EXIT
 echo "Now is time to logout and login in chroot with that command"
 echo "Command:"
 echo "chroot \"$LFS\" /usr/bin/env -i HOME=/root TERM=\"$TERM\" PS1='\u:\w\$ ' PATH=/bin:/usr/bin:/sbin:/usr/sbin /bin/bash --login"

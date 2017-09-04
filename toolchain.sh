@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+set -e
+trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
+trap 'echo FAILED COMMAND: $previous_command' EXIT
+
 mkdir $PWD/build
 
 export MRX=$PWD
@@ -154,4 +158,5 @@ echo "chroot \"$LFS\" /tools/bin/env -i HOME=/root TERM=\"$TERM\" PS1='\u:\w\$ '
 mkdir -v $LFS/scripts
 cp -R scripts/basesystem/* build/scripts
 
+trap - EXIT
 echo "Complete"

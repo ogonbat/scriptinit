@@ -1,5 +1,9 @@
 #!/tools/bin/env bash
 
+set -e
+trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
+trap 'echo FAILED COMMAND: $previous_command' EXIT
+
 echo "Create Directories"
 
 mkdir -pv /{bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
@@ -127,7 +131,9 @@ source grep.sh
 echo "Install Bash"
 source bash.sh
 
+trap - EXIT
 echo "Now is time to login with the new bash installed"
 echo "Command:"
 echo "exec /bin/bash --login +h"
 echo "After that start the chroot step two"
+

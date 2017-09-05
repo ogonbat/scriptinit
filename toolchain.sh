@@ -124,7 +124,7 @@ source ./scripts/toolchain/utillinux.sh
 echo "Install XZ"
 source ./scripts/toolchain/xz.sh
 
-
+trap - EXIT
 echo "Stripping"
 
 strip --strip-debug /tools/lib/*
@@ -154,5 +154,4 @@ echo "chroot \"$LFS\" /tools/bin/env -i HOME=/root TERM=\"$TERM\" PS1='\u:\w\$ '
 mkdir -v $LFS/scripts
 cp -R scripts/basesystem/* build/scripts
 
-trap - EXIT
 echo "Complete"

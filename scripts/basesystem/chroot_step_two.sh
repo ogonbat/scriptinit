@@ -141,7 +141,11 @@ done
 
 unset LIB save_lib save_usrlib
 
-rm -rf /tmp/*
+logout
+
+rm -rf ${LFS}/tmp/*
+
+
 
 
 trap - EXIT

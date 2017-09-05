@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-set -e
-trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
-trap 'echo FAILED COMMAND: $previous_command' EXIT
+#set -e
+#trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
+#trap 'echo FAILED COMMAND: $previous_command' EXIT
 
 mkdir $PWD/build
 
@@ -29,72 +29,72 @@ export MAKEFLAGS='-j 4'
 echo "Start Toolchain"
 
 echo "Install Binutils"
-source ./scripts/toolchain/binutils.sh 2>&1
+source ./scripts/toolchain/binutils.sh 1>&1
 echo "Install GCC"
-source ./scripts/toolchain/gcc.sh 2>&1
+source ./scripts/toolchain/gcc.sh 1>&1
 echo "Install Linux"
-source ./scripts/toolchain/linux.sh 2>&1
+source ./scripts/toolchain/linux.sh 1>&1
 echo "Install GLibc"
-source ./scripts/toolchain/glibc.sh 2>&1
+source ./scripts/toolchain/glibc.sh 1>&1
 echo "Install Libstdc"
-source ./scripts/toolchain/libstdc.sh 2>&1
+source ./scripts/toolchain/libstdc.sh 1>&1
 echo "Install Binutils Step 2"
-source ./scripts/toolchain/binutils.2.sh 2>&1
+source ./scripts/toolchain/binutils.2.sh 1>&1
 echo "Install GCC Step 2"
-source ./scripts/toolchain/gcc.2.sh 2>&1
+source ./scripts/toolchain/gcc.2.sh 1>&1
 echo "Install TCL"
-source ./scripts/toolchain/tcl.sh 2>&1
+source ./scripts/toolchain/tcl.sh 1>&1
 echo "Install Expect"
-source ./scripts/toolchain/expect.sh 2>&1
+source ./scripts/toolchain/expect.sh 1>&1
 echo "Install DejaGNU"
-source ./scripts/toolchain/dejagnu.sh 2>&1
+source ./scripts/toolchain/dejagnu.sh 1>&1
 echo "Install Check"
-source ./scripts/toolchain/check.sh 2>&1
+source ./scripts/toolchain/check.sh 1>&1
 echo "Install Ncurses"
-source ./scripts/toolchain/ncurses.sh 2>&1
+source ./scripts/toolchain/ncurses.sh 1>&1
 echo "Install Bash"
-source ./scripts/toolchain/bash.sh 2>&1
+source ./scripts/toolchain/bash.sh 1>&1
 echo "Install Bison"
-source ./scripts/toolchain/bison.sh 2>&1
+source ./scripts/toolchain/bison.sh 1>&1
 echo "Install Bzip2"
-source ./scripts/toolchain/bzip.sh 2>&1
+source ./scripts/toolchain/bzip.sh 1>&1
 echo "Install Coreutils"
-source ./scripts/toolchain/coreutils.sh 2>&1
+source ./scripts/toolchain/coreutils.sh 1>&1
 echo "Install Diffutils"
-source ./scripts/toolchain/diffutils.sh 2>&1
+source ./scripts/toolchain/diffutils.sh 1>&1
 echo "Install File"
-source ./scripts/toolchain/file.sh 2>&1
+source ./scripts/toolchain/file.sh 1>&1
 echo "Install Findutils"
-source ./scripts/toolchain/findutils.sh 2>&1
+source ./scripts/toolchain/findutils.sh 1>&1
 echo "Install Gawk"
-source ./scripts/toolchain/gawk.sh 2>&1
+source ./scripts/toolchain/gawk.sh 1>&1
 echo "Install Gettext"
-source ./scripts/toolchain/gettext.sh 2>&1
+source ./scripts/toolchain/gettext.sh 1>&1
 echo "Install Grep"
-source ./scripts/toolchain/grep.sh 2>&1
+source ./scripts/toolchain/grep.sh 1>&1
 echo "Install Gzip"
-source ./scripts/toolchain/gzip.sh 2>&1
+source ./scripts/toolchain/gzip.sh 1>&1
 echo "Install M4"
-source ./scripts/toolchain/m4.sh 2>&1
+source ./scripts/toolchain/m4.sh 1>&1
 echo "Install Make"
-source ./scripts/toolchain/make.sh 2>&1
+source ./scripts/toolchain/make.sh 1>&1
 echo "Install Patch"
-source ./scripts/toolchain/patch.sh 2>&1
+source ./scripts/toolchain/patch.sh 1>&1
 echo "Install Perl"
-source ./scripts/toolchain/perl.sh 2>&1
+source ./scripts/toolchain/perl.sh 1>&1
 echo "Install Sed"
-source ./scripts/toolchain/sed.sh 2>&1
+source ./scripts/toolchain/sed.sh 1>&1
 echo "Install Tar"
-source ./scripts/toolchain/tar.sh 2>&1
+source ./scripts/toolchain/tar.sh 1>&1
 echo "Install Texinfo"
-source ./scripts/toolchain/texinfo.sh 2>&1
+source ./scripts/toolchain/texinfo.sh 1>&1
 echo "Install Util Linux"
-source ./scripts/toolchain/utillinux.sh 2>&1
+source ./scripts/toolchain/utillinux.sh 1>&1
 echo "Install XZ"
-source ./scripts/toolchain/xz.sh 2>&1
+source ./scripts/toolchain/xz.sh 1>&1
 
 
-trap - EXIT
+#trap - EXIT
 echo "Stripping"
 
 strip --strip-debug /tools/lib/*
@@ -195,9 +195,9 @@ exec /tools/bin/bash --login +h
 cd /scripts
 
 echo "Install Linux"
-source linux.sh 2>&1
+source linux.sh 1>&1
 echo "Install Man Pages"
-source manpages.sh 2>&1
+source manpages.sh 1>&1
 echo "Install GlibC"
 source glibc.sh
 
@@ -221,51 +221,51 @@ rm -v dummy.c a.out dummy.log
 echo "Install Zlib"
 source zlib.sh
 echo "Install File"
-source file.sh 2>&1
+source file.sh 1>&1
 echo "Install Readline"
-source readline.sh 2>&1
+source readline.sh 1>&1
 echo "Install M4"
-source m4.sh 2>&1
+source m4.sh 1>&1
 echo "Install BC"
-source bc.sh 2>&1
+source bc.sh 1>&1
 echo "Install Binutils"
-source binutils.sh 2>&1
+source binutils.sh 1>&1
 echo "Install GMP"
-source gmp.sh 2>&1
+source gmp.sh 1>&1
 echo "Install MPFR"
-source mpfr.sh 2>&1
+source mpfr.sh 1>&1
 echo "Install MPC"
-source mpc.sh 2>&1
+source mpc.sh 1>&1
 echo "Install GCC"
-source gcc.sh 2>&1
+source gcc.sh 1>&1
 echo "Install BZip2"
-source bzip.sh 2>&1
+source bzip.sh 1>&1
 echo "Install PkgConfig"
-source pkgconfig.sh 2>&1
+source pkgconfig.sh 1>&1
 echo "Install Ncurses"
-source ncurses.sh 2>&1
+source ncurses.sh 1>&1
 echo "Install Attr"
-source attr.sh 2>&1
+source attr.sh 1>&1
 echo "Install Acl"
-source acl.sh 2>&1
+source acl.sh 1>&1
 echo "Install Libcap"
-source libcap.sh 2>&1
+source libcap.sh 1>&1
 echo "Install Sed"
-source sed.sh 2>&1
+source sed.sh 1>&1
 echo "Install Shadow"
-source shadow.sh 2>&1
+source shadow.sh 1>&1
 echo "Install PsMisc"
-source psmisc.sh 2>&1
+source psmisc.sh 1>&1
 echo "Install Iana"
-source iana.sh 2>&1
+source iana.sh 1>&1
 echo "Install Bison"
-source bison.sh 2>&1
+source bison.sh 1>&1
 echo "Install Flex"
-source flex.sh 2>&1
+source flex.sh 1>&1
 echo "Install Grep"
-source grep.sh 2>&1
+source grep.sh 1>&1
 echo "Install Bash"
-source bash.sh 2>&1
+source bash.sh 1>&1
 
 echo "Executew New Installed Bash"
 logout
@@ -275,77 +275,77 @@ exec /bin/bash --login +h
 echo "Install Libtool"
 source libtool.sh
 echo "Install GDBM"
-source gdbm.sh 2>&1
+source gdbm.sh 1>&1
 echo "Install Gperf"
-source gperf.sh 2>&1
+source gperf.sh 1>&1
 echo "Install Expat"
-source expat.sh 2>&1
+source expat.sh 1>&1
 echo "Install Inetutils"
-source inetutils.sh 2>&1
+source inetutils.sh 1>&1
 echo "Install Perl"
-source perl.sh 2>&1
+source perl.sh 1>&1
 echo "Install XML::Parser"
-source xmlperl.sh 2>&1
+source xmlperl.sh 1>&1
 echo "Install IntlTool"
-source intltool.sh 2>&1
+source intltool.sh 1>&1
 echo "Install Autoconf"
-source autoconf.sh 2>&1
+source autoconf.sh 1>&1
 echo "Install Automake"
-source automake.sh 2>&1
+source automake.sh 1>&1
 echo "Install Xz"
-source xz.sh 2>&1
+source xz.sh 1>&1
 echo "Install KMod"
-source kmod.sh 2>&1
+source kmod.sh 1>&1
 echo "Install Gettext"
-source gettext.sh 2>&1
+source gettext.sh 1>&1
 echo "Install ProcPSNG"
-source procpsng.sh 2>&1
+source procpsng.sh 1>&1
 echo "Install E2fsProgs"
-source e2fsprogs.sh 2>&1
+source e2fsprogs.sh 1>&1
 echo "Install Ncurses"
-source ncurses.sh 2>&1
+source ncurses.sh 1>&1
 echo "Install Coreutils"
-source coreutils.sh 2>&1
+source coreutils.sh 1>&1
 echo "Install Diffutils"
-source diffutils.sh 2>&1
+source diffutils.sh 1>&1
 echo "Install Gawk"
-source gawk.sh 2>&1
+source gawk.sh 1>&1
 echo "Install Findutils"
-source findutils.sh 2>&1
+source findutils.sh 1>&1
 echo "Install Groff"
-source groff.sh 2>&1
+source groff.sh 1>&1
 echo "Install Grub"
-source grub.sh 2>&1
+source grub.sh 1>&1
 echo "Install Less"
-source less.sh 2>&1
+source less.sh 1>&1
 echo "Install Gzip"
-source gzip.sh 2>&1
+source gzip.sh 1>&1
 echo "Install IPRoute2"
-source iproute.sh 2>&1
+source iproute.sh 1>&1
 echo "Install Kbd"
-source kbd.sh 2>&1
+source kbd.sh 1>&1
 echo "Install LibPipeline"
-source libpipeline.sh 2>&1
+source libpipeline.sh 1>&1
 echo "Install Make"
-source make.sh 2>&1
+source make.sh 1>&1
 echo "Install Patch"
-source patch.sh 2>&1
+source patch.sh 1>&1
 echo "Install Sysklogd"
-source sysklogd.sh 2>&1
+source sysklogd.sh 1>&1
 echo "Install Sysvinit"
-source sysvinit.sh 2>&1
+source sysvinit.sh 1>&1
 echo "Install Eudev"
-source eudev.sh 2>&1
+source eudev.sh 1>&1
 echo "Install Util Linux"
-source utillinux.sh 2>&1
+source utillinux.sh 1>&1
 echo "Install man DB"
-source man-db.sh 2>&1
+source man-db.sh 1>&1
 echo "Install Tar"
-source tar.sh 2>&1
+source tar.sh 1>&1
 echo "Install TexInfo"
-source texinfo.sh 2>&1
+source texinfo.sh 1>&1
 echo "Install Vim"
-source vim.sh 2>&1
+source vim.sh 1>&1
 
 echo "Stripping CHROOT"
 save_lib="ld-2.26.so libc-2.26.so libpthread-2.26.so libthread_db-1.0.so"

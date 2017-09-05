@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.gnome.org/pub/gnome/sources/glibmm/2.50/glibmm-2.50.1.tar.xz"
+MD5SUMLIST="a5b915dc42fc62983fa78ca8486f4391"
+REQUIRES="glib2 libsigc++"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -e '/^libdocdir =/ s/$(book_name)/glibmm-2.50.1/' \
+    -i docs/Makefile.in
+
+./configure --prefix=/usr
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

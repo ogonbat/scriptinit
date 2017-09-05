@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="http://pub.mate-desktop.org/releases/1.18/mate-sensors-applet-1.18.1.tar.xz"
+MD5SUMLIST="b5951be7e507563de7bc5622e79c6d44"
+REQUIRES="mate-panel"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./autogen.sh --prefix=/usr \
+        --sysconfdir=/etc/mate/1.18 \
+        --localstatedir=/var \
+        --mandir=/usr/share/man \
+        --libexecdir=/usr/lib/mate-sensors-applet \
+        --disable-static
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

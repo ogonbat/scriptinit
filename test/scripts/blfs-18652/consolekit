@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://github.com/Consolekit2/ConsoleKit2/releases/download/1.0.2/ConsoleKit2-1.0.2.tar.bz2"
+MD5SUMLIST="e03dd98322c78425a87418af9d788518"
+REQUIRES="dbus-glib linux-pam x7lib"
+RECOMMENDS="polkit"
+
+# (*) Install 'polkit' because it avoids security problems
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --enable-udev-acl    \
+            --enable-pam-module  \
+            --enable-polkit      \
+            --with-xinitrc-dir=/etc/X11/app-defaults/xinitrc.d \
+            --docdir=/usr/share/doc/ConsoleKit-1.0.2           \
+            --with-systemdsystemunitdir=no
+make
+
+make DESTDIR=${FAKEROOT} install
+
+mv -v ${FAKEROOT}/etc/X11/app-defaults/xinitrc.d/90-consolekit{,.sh}
+
+cat >> ${FAKEROOT}/etc/pam.d/system-session << "EOF"
+# Begin ConsoleKit addition
+
+session   optional    pam_loginuid.so
+session   optional    pam_ck_connector.so nox11
+
+# End ConsoleKit addition
+EOF
+
+cat > ${FAKEROOT}/usr/lib/ConsoleKit/run-session.d/pam-foreground-compat.ck << "EOF"
+#!/bin/sh
+TAGDIR=/var/run/console
+
+[ -n "$CK_SESSION_USER_UID" ] || exit 1
+[ "$CK_SESSION_IS_LOCAL" = "true" ] || exit 0
+
+TAGFILE="$TAGDIR/`getent passwd $CK_SESSION_USER_UID | cut -f 1 -d:`"
+
+if [ "$1" = "session_added" ]; then
+    mkdir -p "$TAGDIR"
+    echo "$CK_SESSION_ID" >> "$TAGFILE"
+fi
+
+if [ "$1" = "session_removed" ] && [ -e "$TAGFILE" ]; then
+    sed -i "\%^$CK_SESSION_ID\$%d" "$TAGFILE"
+    [ -s "$TAGFILE" ] || rm -f "$TAGFILE"
+fi
+EOF
+chmod -v 755 ${FAKEROOT}/usr/lib/ConsoleKit/run-session.d/pam-foreground-compat.ck
+
+#################
+} # END OF FILE #
+#################
+

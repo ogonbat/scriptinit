@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.sourceforge.net/lxde/menu-cache-1.0.2.tar.xz"
+MD5SUMLIST="8dde7a3f5bd9798d0129d1979a5d7640"
+REQUIRES="libfm-extra"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr \
+            --disable-static
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

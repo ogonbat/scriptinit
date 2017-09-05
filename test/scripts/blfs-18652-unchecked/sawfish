@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://download.tuxfamily.org/sawfish/sawfish_1.12.0.tar.xz"
+MD5SUMLIST="074446085b2518a07cf0e0c8c8b6df41"
+REQUIRES="rep-gtk which"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr --with-pango
+make
+
+make DESTDIR=${FAKEROOT} install
+
+cat >> ${FAKEROOT}/etc/alternatives/xinitrc/sawfish.xinitrc << "EOF"
+exec sawfish
+EOF
+
+#################
+} # END OF FILE #
+#################
+

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="http://memtest.org/download/5.01/memtest86+-5.01.tar.gz
+          http://ftp4.de.freebsd.org/gentoo-portage/sys-apps/memtest86+/files/memtest86+-5.01-io-extern-inline.patch
+          http://ftp4.de.freebsd.org/gentoo-portage/sys-apps/memtest86+/files/memtest86+-5.01-no-C-headers.patch
+          http://ftp4.de.freebsd.org/gentoo-portage/sys-apps/memtest86+/files/memtest86+-5.01-no-scp.patch
+          http://ftp4.de.freebsd.org/gentoo-portage/sys-apps/memtest86+/files/memtest86+-5.01-reboot-def.patch"
+MD5SUMLIST="43c5832baa919e1206e251e735cdee2d
+            6de3cd0cb4eb70ca0013dca0a5dd37e5
+            d2be1763670101536096c4c3091dacc3
+            0d8c63aa6c0dcf54a097f95eda0b7f15
+            3283e36586c9594470f6979d8ba5888c"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+patch -Np1 -i ../memtest86+-5.01-no-C-headers.patch
+patch -Np1 -i ../memtest86+-5.01-reboot-def.patch
+patch -Np1 -i ../memtest86+-5.01-io-extern-inline.patch
+patch -Np1 -i ../memtest86+-5.01-no-scp.patch
+
+make -j1
+
+cp -v memtest.bin ${FAKEROOT}/boot/memtest86plus
+
+#################
+} # END OF FILE #
+#################
+

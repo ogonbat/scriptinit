@@ -1,0 +1,85 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ffmpeg.org/releases/ffmpeg-3.3.tar.xz"
+MD5SUMLIST="368f1fff4bdadaf2823934cc0aadd71d"
+REQUIRES="fdk-aac lame libass libtheora libvorbis libvpx opus x264 x265 x7lib yasm"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i 's/-lflite"/-lflite -lasound"/' configure
+
+./configure --prefix=/usr        \
+            --enable-gpl         \
+            --enable-version3    \
+            --enable-nonfree     \
+            --disable-static     \
+            --enable-shared      \
+            --disable-debug      \
+            --enable-libass      \
+            --enable-libfdk-aac  \
+            --enable-libfreetype \
+            --enable-libmp3lame  \
+            --enable-libopus     \
+            --enable-libtheora   \
+            --enable-libvorbis   \
+            --enable-libvpx      \
+            --enable-libx264     \
+            --enable-libx265     \
+            --docdir=/usr/share/doc/ffmpeg-3.3
+
+make
+
+gcc tools/qt-faststart.c -o tools/qt-faststart
+
+# (*) Suppress the building of documentation which requires additional software to be installed
+#pushd doc
+#for DOCNAME in `basename -s .html *.html`
+#do
+#    texi2pdf -b $DOCNAME.texi
+#    texi2dvi -b $DOCNAME.texi
+#
+#    dvips    -o $DOCNAME.ps   \
+#                $DOCNAME.dvi
+#done
+#popd
+#unset DOCNAME
+
+make DESTDIR=${FAKEROOT} install
+
+install -v -m755    tools/qt-faststart ${FAKEROOT}/usr/bin
+install -v -m644    doc/*.txt ${FAKEROOT}/usr/share/doc/ffmpeg-3.3
+
+# (*) Suppress the installation of documentation which requires additional software to be installed
+#install -v -m644 doc/*.pdf ${FAKEROOT}/usr/share/doc/ffmpeg-3.3
+#install -v -m644 doc/*.ps  ${FAKEROOT}/usr/share/doc/ffmpeg-3.3
+
+# (*) Suppress the building of documentation which requires additional software to be installed
+#install -v -m755 -d ${FAKEROOT}/usr/share/doc/ffmpeg-3.3/api
+#cp -vr doc/doxy/html/* ${FAKEROOT}/usr/share/doc/ffmpeg-3.3/api
+#find ${FAKEROOT}/usr/share/doc/ffmpeg-3.3/api -type f -exec chmod -c 0644 \{} \;
+#find ${FAKEROOT}/usr/share/doc/ffmpeg-3.3/api -type d -exec chmod -c 0755 \{} \;
+
+# (*) Don't run test suites
+#make fate-rsync SAMPLES=fate-suite/
+
+# (*) Don't run test suites
+#rsync -vrltLW  --delete --timeout=60 --contimeout=60 \
+#      rsync://fate-suite.ffmpeg.org/fate-suite/ fate-suite/
+
+# (*) Don't run test suites
+#make fate THREADS=N SAMPLES=fate-suite/ | tee ../fate.log
+#grep ^TEST ../fate.log | wc -l
+
+#################
+} # END OF FILE #
+#################
+

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre2-10.23.tar.bz2"
+MD5SUMLIST="b2cd00ca7e24049040099b0a46bb3649"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr                       \
+            --docdir=/usr/share/doc/pcre2-10.23 \
+            --enable-unicode                    \
+            --enable-pcre2-16                   \
+            --enable-pcre2-32                   \
+            --enable-pcre2grep-libz             \
+            --enable-pcre2grep-libbz2           \
+            --enable-pcre2test-libreadline      \
+            --disable-static
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

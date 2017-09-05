@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="http://pub.mate-desktop.org/releases/1.18/caja-1.18.2.tar.xz"
+MD5SUMLIST="90841d4db2860ae662586cd40519da11"
+REQUIRES="libnotify libunique mate-desktop shared-mime-info"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./autogen.sh --prefix=/usr \
+        --sysconfdir=/etc/mate/1.18 \
+        --localstatedir=/var \
+        --mandir=/usr/share/man \
+        --libexecdir=/usr/lib/caja \
+        --disable-static
+make
+
+make DESTDIR=${FAKEROOT} install
+
+install -v -m755 -d ${FAKEROOT}/usr/share/doc/caja
+install -v -m644 docs/*.{txt,dia,pdf,sxw,faq,html} \
+        ${FAKEROOT}/usr/share/doc/caja
+
+#################
+} # END OF FILE #
+#################
+

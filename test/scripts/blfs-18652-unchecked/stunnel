@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="ftp://ftp.stunnel.org/stunnel/archive/5.x/stunnel-5.41.tar.gz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="583bb43e4344e4a7190acb636f8b5024
+            b4f1623b69c67f10e67ca610ceee56b4"
+REQUIRES="openssl"
+TAGS="preinst"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i '/LDFLAGS.*static_flag/ s/^/#/' configure
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-systemd
+make
+
+make DESTDIR=${FAKEROOT} docdir=/usr/share/doc/stunnel-5.41 install
+
+make DESTDIR=${FAKEROOT} cert
+
+install -v -m750 -o stunnel -g stunnel -d ${FAKEROOT}/var/lib/stunnel/run
+chown stunnel:stunnel ${FAKEROOT}/var/lib/stunnel
+
+cat > ${FAKEROOT}/etc/stunnel/stunnel.conf << "EOF" 
+; File: /etc/stunnel/stunnel.conf
+
+; Note: The pid and output locations are relative to the chroot location.
+
+pid    = /run/stunnel.pid
+chroot = /var/lib/stunnel
+client = no
+setuid = stunnel
+setgid = stunnel
+cert   = /etc/stunnel/stunnel.pem
+
+;debug = 7
+;output = stunnel.log
+
+;[https]
+;accept  = 443
+;connect = 80
+;; "TIMEOUTclose = 0" is a workaround for a design flaw in Microsoft SSL
+;; Microsoft implementations do not use SSL close-notify alert and thus
+;; they are vulnerable to truncation attacks
+;TIMEOUTclose = 0
+
+EOF
+
+includeBootscript stunnel
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+groupadd -g 51 stunnel
+useradd -c "stunnel Daemon" -d /var/lib/stunnel \
+        -g stunnel -s /bin/false -u 51 stunnel
+
+#################
+} # END OF FILE #
+#################
+

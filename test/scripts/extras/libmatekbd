@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="http://pub.mate-desktop.org/releases/1.18/libmatekbd-1.18.2.tar.xz"
+MD5SUMLIST="1d5a491f45801a18f692714eac31da76"
+REQUIRES="gtk+3 libxklavier mate-common"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./autogen.sh --prefix=/usr \
+        --sysconfdir=/etc/mate/1.18 \
+        --localstatedir=/var \
+        --mandir=/usr/share/man \
+        --libexecdir=/usr/lib/mate-kbd \
+        --disable-static
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

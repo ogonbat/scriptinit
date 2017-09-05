@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://www.kernel.org/pub/linux/utils/net/bridge-utils/bridge-utils-1.6.tar.xz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="541ae1c50cc268056693608920e6c908
+            b4f1623b69c67f10e67ca610ceee56b4"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+
+autoconf
+./configure --prefix=/usr
+make
+
+make DESTDIR=${FAKEROOT} install
+
+includeBootscript service-bridge
+
+cat > ${FAKEROOT}/etc/sysconfig/ifconfig.br0 << "EOF"
+ONBOOT=yes
+IFACE=br0
+SERVICE="bridge ipv4-static"  # Space separated
+IP=192.168.1.32
+GATEWAY=192.168.1.1
+PREFIX=24
+BROADCAST=192.168.1.255
+CHECK_LINK=no                 # Don't check before bridge is created
+STP=no                        # Spanning tree protocol, default no
+INTERFACE_COMPONENTS="eth0"   # Add to IFACE, space separated devices
+IP_FORWARD=true
+EOF
+
+#################
+} # END OF FILE #
+#################
+

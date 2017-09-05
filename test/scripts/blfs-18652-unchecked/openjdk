@@ -1,0 +1,153 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="___PRIMARY_SOURCE_NOT_FOUND___
+          http://anduin.linuxfromscratch.org/BLFS/OpenJDK/OpenJDK-1.8.0.121/jtreg-4.2-b05-747.tar.gz
+          http://hg.openjdk.java.net/jdk8u/jdk8u/archive/jdk8u121-b13.tar.bz2
+          http://icedtea.classpath.org/download/source/icedtea-web-1.6.2.tar.gz"
+MD5SUMLIST="5f3def798fa3a0b2c60ae891856dc9c5
+            dontverify
+            dontverify
+            dontverify"
+REQUIRES="alsa-lib cpio cups java ojdk-conf unzip which x7lib zip"
+POSTINST="now"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+cat > subprojects.md5 << EOF
+9c052259b93646687fdcfb71643b69b4  corba.tar.bz2
+0ca6e85dcbd96dfa24ac1bdd833aab2e  hotspot.tar.bz2
+c2b5c1947c4aef684b27a463e4149d06  jaxp.tar.bz2
+5a83842eca3881c7bf6abeaccac8f05d  jaxws.tar.bz2
+4dbe002af94423cbe382dda03e3e6a9d  langtools.tar.bz2
+0325b88a2b39d7d72ef0726e91ea4a1d  jdk.tar.bz2
+c87f96bc7ba9596fb5587e307a8f1ec6  nashorn.tar.bz2
+EOF
+
+for subproject in corba hotspot jaxp jaxws langtools jdk nashorn; do
+  wget -c http://hg.openjdk.java.net/jdk8u/jdk8u/${subproject}/archive/jdk8u121-b13.tar.bz2 \
+       -O ${subproject}.tar.bz2
+done
+
+md5sum -c subprojects.md5
+
+for subproject in corba hotspot jaxp jaxws langtools jdk nashorn; do
+  mkdir -pv ${subproject}
+  tar -xf ${subproject}.tar.bz2 --strip-components=1 -C ${subproject}
+done
+
+tar -xf ../jtreg-4.2-b05-747.tar.gz
+
+unset JAVA_HOME
+sh ./configure                \
+   --with-update-version=121   \
+   --with-build-number=b13    \
+   --with-milestone=BLFS      \
+   --enable-unlimited-crypto  \
+   --with-zlib=system         \
+   --with-giflib=system       \
+   --with-extra-cflags="-std=c++98 -Wno-error -fno-delete-null-pointer-checks -fno-lifetime-dse" \
+   --with-extra-cxxflags="-std=c++98 -fno-delete-null-pointer-checks -fno-lifetime-dse"
+make DEBUG_BINARIES=true SCTP_WERROR= all
+find build/*/images/j2sdk-image -iname \*.diz -delete
+
+if [ -n "$DISPLAY" ]; then
+  OLD_DISP=$DISPLAY
+fi
+export DISPLAY=:20
+nohup Xvfb $DISPLAY                              \
+           -fbdir $(pwd)                         \
+           -pixdepths 8 16 24 32 > Xvfb.out 2>&1 &
+echo $! > Xvfb.pid
+echo Waiting for Xvfb to initialize; sleep 1
+nohup twm -display $DISPLAY \
+          -f /dev/null > twm.out 2>&1            &
+echo $! > twm.pid
+echo Waiting for twm to initialize; sleep 1
+xhost +
+
+echo -e "
+jdk_all = :jdk_core           \\
+          :jdk_svc            \\
+          :jdk_beans          \\
+          :jdk_imageio        \\
+          :jdk_sound          \\
+          :jdk_sctp           \\
+          com/sun/awt         \\
+          javax/accessibility \\
+          javax/print         \\
+          sun/pisces          \\
+          com/sun/java/swing" >> jdk/test/TEST.groups
+sed -e 's/all:.*jck.*/all: jtreg/'      \
+    -e '/^JTREG /s@\$(JT_PLATFORM)/@@'  \
+    -i langtools/test/Makefile
+
+JT_JAVA=$(type -p javac | sed 's@/bin.*@@')
+JT_HOME=$(pwd)/jtreg
+PRODUCT_HOME=$(echo $(pwd)/build/*/images/j2sdk-image)
+
+LANG=C make -k -C test                      \
+            JT_HOME=${JT_HOME}              \
+            JT_JAVA=${JT_JAVA}              \
+            PRODUCT_HOME=${PRODUCT_HOME} all
+LANG=C ${JT_HOME}/bin/jtreg -a -v:fail,error \
+                -dir:$(pwd)/hotspot/test     \
+                -k:\!ignore                  \
+                -jdk:${PRODUCT_HOME}         \
+                :jdk
+
+kill -9 `cat twm.pid`
+kill -9 `cat Xvfb.pid`
+rm -f Xvfb.out twm.out
+rm -f Xvfb.pid twm.pid
+if [ -n "$OLD_DISP" ]; then
+  DISPLAY=$OLD_DISP
+fi
+
+cp -RT build/*/images/j2sdk-image ${FAKEROOT}/opt/OpenJDK-1.8.0.121
+chown -R root:root ${FAKEROOT}/opt/OpenJDK-1.8.0.121
+
+ln -v -nsf OpenJDK-1.8.0.121 ${FAKEROOT}/opt/jdk
+
+tar -xf ../icedtea-web-1.6.2.tar.gz  \
+        icedtea-web-1.6.2/javaws.png \
+        --strip-components=1
+
+mkdir -pv ${FAKEROOT}/usr/share/applications
+
+cat > ${FAKEROOT}/usr/share/applications/openjdk-8-policytool.desktop << "EOF"
+[Desktop Entry]
+Name=OpenJDK Java Policy Tool
+Name[pt_BR]=OpenJDK Java - Ferramenta de Política
+Comment=OpenJDK Java Policy Tool
+Comment[pt_BR]=OpenJDK Java - Ferramenta de Política
+Exec=/opt/jdk/bin/policytool
+Terminal=false
+Type=Application
+Icon=javaws
+Categories=Settings;
+EOF
+
+install -v -Dm0644 javaws.png ${FAKEROOT}/usr/share/pixmaps/javaws.png
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+ln -sfv /etc/ssl/java/cacerts /opt/jdk/jre/lib/security/cacerts
+
+cd /opt/jdk
+bin/keytool -list -keystore /etc/ssl/java/cacerts
+
+#################
+} # END OF FILE #
+#################
+

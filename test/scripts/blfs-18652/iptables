@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://www.netfilter.org/projects/iptables/files/iptables-1.6.1.tar.bz2
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="ab38a33806b6182c6f53d6afb4619add
+            b4f1623b69c67f10e67ca610ceee56b4"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr      \
+            --sbindir=/sbin    \
+            --disable-nftables \
+            --enable-libipq    \
+            --with-xtlibdir=/lib/xtables
+make
+
+make DESTDIR=${FAKEROOT} install
+ln -sfv ../../sbin/xtables-multi ${FAKEROOT}/usr/bin/iptables-xml
+
+for file in ip4tc ip6tc ipq iptc xtables
+do
+  mv -v ${FAKEROOT}/usr/lib/lib${file}.so.* ${FAKEROOT}/lib
+  ln -sfv ../../lib/$(readlink ${FAKEROOT}/usr/lib/lib${file}.so) ${FAKEROOT}/usr/lib/lib${file}.so
+done
+
+includeBootscript iptables
+
+#################
+} # END OF FILE #
+#################
+

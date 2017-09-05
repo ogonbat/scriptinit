@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://webkitgtk.org/releases/webkitgtk-2.16.1.tar.xz"
+MD5SUMLIST="d3bcf995a667fd9febb9ab991acf0ca7"
+REQUIRES="cairo cmake enchant geoclue2 gst10-plugins-base gtk+2 gtk+3 icu libgudev libnotify libsecret libsoup libwebp mesa ruby sqlite which"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i 's/unsigned short/char16_t/'            \
+       Source/JavaScriptCore/API/JSStringRef.h \
+       Source/WebKit2/Shared/API/c/WKString.h
+
+sed -i '/stdbool.h/ a#include <uchar.h>' \
+       Source/JavaScriptCore/API/JSBase.h
+
+mkdir -vp build
+cd        build
+
+cmake -DCMAKE_BUILD_TYPE=Release  \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_SKIP_RPATH=ON       \
+      -DPORT=GTK                  \
+      -DLIB_INSTALL_DIR=/usr/lib  \
+      -DUSE_LIBHYPHEN=OFF         \
+      -DENABLE_MINIBROWSER=ON     \
+      -Wno-dev ..
+make
+
+make DESTDIR=${FAKEROOT} install
+
+install -vdm755 ${FAKEROOT}/usr/share/gtk-doc/html/webkit{2,dom}gtk-4.0
+install -vm644  ../Documentation/webkit2gtk-4.0/html/*   \
+                ${FAKEROOT}/usr/share/gtk-doc/html/webkit2gtk-4.0
+install -vm644  ../Documentation/webkitdomgtk-4.0/html/* \
+                ${FAKEROOT}/usr/share/gtk-doc/html/webkitdomgtk-4.0
+
+#################
+} # END OF FILE #
+#################
+

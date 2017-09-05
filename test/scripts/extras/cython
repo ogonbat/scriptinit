@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="https://pypi.python.org/packages/b7/67/7e2a817f9e9c773ee3995c1e15204f5d01c8da71882016cac10342ef031b/Cython-0.25.2.tar.gz"
+MD5SUMLIST="642c81285e1bb833b14ab3f439964086"
+REQUIRES="python2"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+python setup.py install --root=${FAKEROOT}
+
+#################
+} # END OF FILE #
+#################
+

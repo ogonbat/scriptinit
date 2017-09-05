@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://archive.apache.org/dist/apr/apr-util-1.5.4.tar.bz2"
+MD5SUMLIST="2202b18f269ad606d70e1864857ed93c"
+REQUIRES="apr"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr       \
+            --with-apr=/usr     \
+            --with-gdbm=/usr    \
+            --with-openssl=/usr \
+            --with-crypto
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.gnu.org/pub/gnu/gsl/gsl-2.3.tar.gz"
+MD5SUMLIST="905fcbbb97bc552d1037e34d200931a0"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr --disable-static
+make
+make html
+
+make DESTDIR=${FAKEROOT} install
+
+mkdir ${FAKEROOT}/usr/share/doc/gsl-2.3
+cp doc/gsl-ref.html/* ${FAKEROOT}/usr/share/doc/gsl-2.3
+
+#################
+} # END OF FILE #
+#################
+

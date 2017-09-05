@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="http://ftp.gnome.org/pub/gnome/sources/yelp-tools/3.18/yelp-tools-3.18.0.tar.xz"
+MD5SUMLIST="ceca436ff2ab3900dde718c0f0286f3f"
+REQUIRES="yelp-xsl"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

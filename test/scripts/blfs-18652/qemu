@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://download.qemu-project.org/qemu-2.9.0.tar.bz2"
+MD5SUMLIST="02781eb15b364aedef79da7a5113f5b7"
+REQUIRES="alsa-lib glib2 python2 xorg"
+TAGS="preinst"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+if [ $(uname -m) = i686 ]; then
+   QEMU_ARCH=i386-softmmu
+else
+   QEMU_ARCH=x86_64-softmmu
+fi
+
+mkdir -vp build
+cd        build
+
+../configure --prefix=/usr               \
+             --sysconfdir=/etc           \
+             --target-list=$QEMU_ARCH    \
+             --audio-drv-list=alsa       \
+             --with-sdlabi=2.0           \
+             --docdir=/usr/share/doc/qemu-2.9.0
+
+unset QEMU_ARCH
+
+make
+
+make DESTDIR=${FAKEROOT} install
+
+cat > ${FAKEROOT}/lib/udev/rules.d/65-kvm.rules << "EOF"
+KERNEL=="kvm", GROUP="kvm", MODE="0660"
+EOF
+
+chgrp kvm  ${FAKEROOT}/usr/libexec/qemu-bridge-helper
+chmod 4750 ${FAKEROOT}/usr/libexec/qemu-bridge-helper
+
+ln -sv qemu-system-`uname -m` ${FAKEROOT}/usr/bin/qemu
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+groupadd -g 61 kvm
+
+# (*) Example configuration
+#usermod -a -G kvm <username>
+
+#################
+} # END OF FILE #
+#################
+

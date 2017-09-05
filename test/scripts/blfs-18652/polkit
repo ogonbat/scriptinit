@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://anduin.linuxfromscratch.org/BLFS/polkit/polkit-0.113+git_2919920+js38.tar.xz"
+MD5SUMLIST="11ec10c04899651e40ef66766932254d"
+REQUIRES="glib2 js38"
+RECOMMENDS="gobject-introspection"
+TAGS="preinst"
+
+# (*) Install 'gobject-introspection' because it is required to build Gnome/MATE
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr                    \
+            --sysconfdir=/etc                \
+            --localstatedir=/var             \
+            --disable-static                 \
+            --enable-libsystemd-login=no     \
+            --with-authfw=shadow
+make
+
+make DESTDIR=${FAKEROOT} install
+
+# (*) Not required because PAM is not installed
+#cat > /etc/pam.d/polkit-1 << "EOF"
+## Begin /etc/pam.d/polkit-1
+#
+#auth     include        system-auth
+#account  include        system-account
+#password include        system-password
+#session  include        system-session
+#
+## End /etc/pam.d/polkit-1
+#EOF
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+groupadd -fg 27 polkitd
+useradd -c "PolicyKit Daemon Owner" -d /etc/polkit-1 -u 27 \
+        -g polkitd -s /bin/false polkitd
+
+#################
+} # END OF FILE #
+#################
+

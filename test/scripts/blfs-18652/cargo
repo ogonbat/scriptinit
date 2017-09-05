@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://github.com/rust-lang/cargo/archive/0.17.0.tar.gz
+          http://anduin.linuxfromscratch.org/BLFS/rust/rust-installer-20161004.tar.xz
+          https://static.rust-lang.org/dist/cargo-0.16.0-i686-unknown-linux-gnu.tar.gz
+          https://static.rust-lang.org/dist/cargo-0.16.0-x86_64-unknown-linux-gnu.tar.gz"
+MD5SUMLIST="c0bdbfdeead6a7cdfd7fbfe2183bfc61
+            8fb6c87f12d735b0a8bc1304d7640c69
+            24d4eda62991bfbaecb3a6d1e09df143
+            ad2b513d591f35271f1041e2e04f484c"
+REQUIRES="cmake rust"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+pushd src/rust-installer
+tar -xf ../../../rust-installer-20161004.tar.xz \
+ --strip-components=1
+popd
+
+case $(uname -m) in
+    x86_64) tar -xf ../cargo-0.16.0-x86_64-unknown-linux-gnu.tar.gz
+    ;;
+    i?86) tar -xf ../cargo-0.16.0-i686-unknown-linux-gnu.tar.gz
+    ;;
+esac
+
+./configure --prefix=/usr --sysconfdir=/etc     \
+  --docdir=/usr/share/doc/cargo-0.17.0          \
+  --cargo=./cargo-nightly*/cargo/bin/cargo
+make
+
+make DESTDIR=${FAKEROOT} install
+mv -v ${FAKEROOT}/usr/etc/bash_completion.d/cargo ${FAKEROOT}/etc/bash_completion.d
+
+#################
+} # END OF FILE #
+#################
+

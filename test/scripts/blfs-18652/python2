@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tar.xz
+          https://docs.python.org/2.7/archives/python-2.7.13-docs-html.tar.bz2"
+MD5SUMLIST="53b43534153bb2a0363f08bae8b9d990
+            83197c602330a21473f2d5010b4843c9"
+RECOMMENDS="openssl"
+
+# (*) Install 'openssl' because it is required to build Firefox
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr       \
+            --enable-shared     \
+            --with-system-expat \
+            --with-system-ffi   \
+            --with-ensurepip=yes \
+            --enable-unicode=ucs4
+make
+
+make DESTDIR=${FAKEROOT} install
+chmod -v 755 ${FAKEROOT}/usr/lib/libpython2.7.so.1.0
+
+install -v -dm755 ${FAKEROOT}/usr/share/doc/python-2.7.13
+
+tar --strip-components=1                     \
+    --no-same-owner                          \
+    --directory ${FAKEROOT}/usr/share/doc/python-2.7.13 \
+    -xvf ../python-2.7.13-docs-html.tar.bz2
+
+find ${FAKEROOT}/usr/share/doc/python-2.7.13 -type d -exec chmod 0755 {} \;
+find ${FAKEROOT}/usr/share/doc/python-2.7.13 -type f -exec chmod 0644 {} \;
+
+cat > ${FAKEROOT}/etc/profile.d/python2.sh << "EOF"
+export PYTHONDOCS=/usr/share/doc/python-2.7.13
+EOF
+
+#################
+} # END OF FILE #
+#################
+

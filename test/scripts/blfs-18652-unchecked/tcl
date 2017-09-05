@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.sourceforge.net/tcl/tcl8.6.6-src.tar.gz
+          http://downloads.sourceforge.net/tcl/tcl8.6.6-html.tar.gz"
+MD5SUMLIST="5193aea8107839a79df8ac709552ecb7
+            dontverify"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+tar -xf ../tcl8.6.6-html.tar.gz --strip-components=1
+
+export SRCDIR=`pwd`
+
+cd unix
+
+./configure --prefix=/usr           \
+            --mandir=/usr/share/man \
+            $([ $(uname -m) = x86_64 ] && echo --enable-64bit)
+make
+
+sed -e "s#$SRCDIR/unix#/usr/lib#" \
+    -e "s#$SRCDIR#/usr/include#"  \
+    -i tclConfig.sh
+
+sed -e "s#$SRCDIR/unix/pkgs/tdbc1.0.4#/usr/lib/tdbc1.0.4#" \
+    -e "s#$SRCDIR/pkgs/tdbc1.0.4/generic#/usr/include#"    \
+    -e "s#$SRCDIR/pkgs/tdbc1.0.4/library#/usr/lib/tcl8.6#" \
+    -e "s#$SRCDIR/pkgs/tdbc1.0.4#/usr/include#"            \
+    -i pkgs/tdbc1.0.4/tdbcConfig.sh
+
+sed -e "s#$SRCDIR/unix/pkgs/itcl4.0.5#/usr/lib/itcl4.0.5#" \
+    -e "s#$SRCDIR/pkgs/itcl4.0.5/generic#/usr/include#"    \
+    -e "s#$SRCDIR/pkgs/itcl4.0.5#/usr/include#"            \
+    -i pkgs/itcl4.0.5/itclConfig.sh
+
+unset SRCDIR
+
+make DESTDIR=${FAKEROOT} install
+make DESTDIR=${FAKEROOT} install-private-headers
+ln -v -sf tclsh8.6 ${FAKEROOT}/usr/bin/tclsh
+chmod -v 755 ${FAKEROOT}/usr/lib/libtcl8.6.so
+
+mkdir -v -p ${FAKEROOT}/usr/share/doc/tcl-8.6.6
+cp -v -r  ../html/* ${FAKEROOT}/usr/share/doc/tcl-8.6.6
+
+#################
+} # END OF FILE #
+#################
+

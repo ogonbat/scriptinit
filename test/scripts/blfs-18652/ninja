@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://github.com/ninja-build/ninja/archive/v1.7.2.tar.gz"
+MD5SUMLIST="7b482218757acbaeac4d4d54a3cd94e1"
+REQUIRES="python2"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure.py --bootstrap
+
+# (*) Don't assume emacs is installed
+#emacs -Q --batch -f batch-byte-compile misc/ninja-mode.el
+
+./configure.py
+ninja ninja_test
+./ninja_test --gtest_filter=-SubprocessTest.SetWithLots
+
+install -vm755 ninja ${FAKEROOT}/usr/bin/
+install -vDm644 misc/ninja.vim \
+                ${FAKEROOT}/usr/share/vim/vim80/syntax/ninja.vim
+install -vDm644 misc/bash-completion \
+                ${FAKEROOT}/usr/share/bash-completion/completions/ninja
+install -vDm644 misc/zsh-completion \
+                ${FAKEROOT}/usr/share/zsh/site-functions/_ninja
+
+# (*) Don't assume emacs is installed
+#install -vDm644 misc/ninja-mode.el \
+#                ${FAKEROOT}/usr/share/emacs/site-lisp/ninja-mode.el
+#install -vDm644 misc/ninja-mode.elc \
+#                ${FAKEROOT}/usr/share/emacs/site-lisp/ninja-mode.elc
+
+# (*) Suppress the building of documentation
+#ninja manual
+#install -vDm644 doc/manual.html ${FAKEROOT}/usr/share/doc/ninja-1.7.2/manual.html
+
+# (*) Suppress the building of documentation
+#ninja doxygen
+#install -vDdm644 doc/doxygen/html/* ${FAKEROOT}/usr/share/doc/ninja-1.7.2/
+
+#################
+} # END OF FILE #
+#################
+

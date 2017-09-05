@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://download.oracle.com/berkeley-db/db-6.2.32.tar.gz"
+MD5SUMLIST="33491b4756cb44b91c3318b727e71023"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+cd build_unix
+../dist/configure --prefix=/usr      \
+                  --enable-compat185 \
+                  --enable-dbm       \
+                  --disable-static   \
+                  --enable-cxx
+make
+
+make DESTDIR=${FAKEROOT} docdir=/usr/share/doc/db-6.2.32 install
+
+chown -v -R root:root                        \
+      ${FAKEROOT}/usr/bin/db_*                          \
+      ${FAKEROOT}/usr/include/db{,_185,_cxx}.h          \
+      ${FAKEROOT}/usr/lib/libdb*.{so,la}                \
+      ${FAKEROOT}/usr/share/doc/db-6.2.32
+
+#################
+} # END OF FILE #
+#################
+

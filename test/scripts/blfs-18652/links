@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://links.twibright.com/download/links-2.14.tar.bz2"
+MD5SUMLIST="0d11b388de22ba280008a36a409a34c6"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr --mandir=/usr/share/man
+make
+
+make DESTDIR=${FAKEROOT} install
+install -v -d -m755 ${FAKEROOT}/usr/share/doc/links-2.14
+install -v -m644 doc/links_cal/* KEYS BRAILLE_HOWTO \
+    ${FAKEROOT}/usr/share/doc/links-2.14
+
+#################
+} # END OF FILE #
+#################
+

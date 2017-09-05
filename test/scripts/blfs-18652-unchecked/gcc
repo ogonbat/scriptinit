@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftpmirror.gnu.org/gcc/gcc-6.3.0/gcc-6.3.0.tar.bz2"
+MD5SUMLIST="677a7623c7ef6ab99881bc4e048debb6"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+case $(uname -m) in
+  x86_64)
+    sed -e '/m64=/s/lib64/lib/' \
+        -i.orig gcc/config/i386/t-linux64
+  ;;
+esac
+
+mkdir build
+cd    build
+
+../configure                                         \
+    --prefix=/usr                                    \
+    --disable-multilib                               \
+    --with-system-zlib                               \
+    --enable-languages=c,c++,fortran,go,objc,obj-c++
+make
+
+ulimit -s 32768
+make -k check
+
+../contrib/test_summary
+
+make DESTDIR=${FAKEROOT} install
+
+mkdir -pv ${FAKEROOT}/usr/share/gdb/auto-load/usr/lib
+mv -v ${FAKEROOT}/usr/lib/*gdb.py ${FAKEROOT}/usr/share/gdb/auto-load/usr/lib
+
+chown -v -R root:root \
+    ${FAKEROOT}/usr/lib/gcc/*linux-gnu/6.3.0/include{,-fixed}
+
+ln -v -sf ../usr/bin/cpp ${FAKEROOT}/lib
+ln -v -sf gcc ${FAKEROOT}/usr/bin/cc
+install -v -dm755 ${FAKEROOT}/usr/lib/bfd-plugins
+ln -sfv ../../libexec/gcc/$(gcc -dumpmachine)/6.3.0/liblto_plugin.so ${FAKEROOT}/usr/lib/bfd-plugins/
+
+#################
+} # END OF FILE #
+#################
+

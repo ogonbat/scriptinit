@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.gnome.org/pub/gnome/sources/pyatspi/2.24/pyatspi-2.24.0.tar.xz"
+MD5SUMLIST="db049a2306a93ef32e3d5a3412918e75"
+REQUIRES="pygobject3"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+mkdir python2
+pushd python2
+../configure --prefix=/usr --with-python=/usr/bin/python
+make
+popd
+
+mkdir python3
+pushd python3
+../configure --prefix=/usr --with-python=/usr/bin/python3
+make
+popd
+
+make DESTDIR=${FAKEROOT} -C python2 install
+
+make DESTDIR=${FAKEROOT} -C python3 install
+
+#################
+} # END OF FILE #
+#################
+

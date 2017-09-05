@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.sourceforge.net/project/xarchiver/xarchiver-0.5.4.tar.bz2
+          http://www.linuxfromscratch.org/patches/blfs/svn/xarchiver-0.5.4-fixes-1.patch"
+MD5SUMLIST="1b4cd37a6af03afc957a8e307417e8d0
+            dontverify"
+REQUIRES="gtk+2 gtk+3"
+POSTINST="true"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+patch -Np1 -i ../xarchiver-0.5.4-fixes-1.patch
+
+./autogen.sh --prefix=/usr               \
+             --libexecdir=/usr/lib/xfce4 \
+             --disable-gtk3              \
+             --docdir=/usr/share/doc/xarchiver-0.5.4
+make
+
+make DESTDIR=${FAKEROOT} DOCDIR=/usr/share/doc/xarchiver-0.5.4 install
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+update-desktop-database
+gtk-update-icon-cache -t -f --include-image-data /usr/share/icons/hicolor
+
+#################
+} # END OF FILE #
+#################
+

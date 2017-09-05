@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.1.20.tar.bz2"
+MD5SUMLIST="f6bc7e0b82893dfafe09109d86ff6e9b"
+REQUIRES="libassuan libgcrypt libgpg-error libksba npth"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -e '/noinst_SCRIPTS = gpg-zip/c sbin_SCRIPTS += gpg-zip' \
+    -i tools/Makefile.in
+
+sed -i -e '/^  test_agent_protect/s:^://:' agent/t-protect.c
+sed -i -e '174,186 s/^/;;/'                tests/openpgp/ecc.scm
+
+./configure --prefix=/usr            \
+            --enable-symcryptrun     \
+            --enable-maintainer-mode \
+            --docdir=/usr/share/doc/gnupg-2.1.20
+make
+
+makeinfo --html --no-split \
+         -o doc/gnupg_nochunks.html doc/gnupg.texi
+makeinfo --plaintext       \
+         -o doc/gnupg.txt           doc/gnupg.texi
+
+make -C doc pdf ps html
+
+make DESTDIR=${FAKEROOT} install
+
+install -v -m755 -d ${FAKEROOT}/usr/share/doc/gnupg-2.1.20/html
+install -v -m644    doc/gnupg_nochunks.html \
+                    ${FAKEROOT}/usr/share/doc/gnupg-2.1.20/html/gnupg.html
+install -v -m644    doc/*.texi doc/gnupg.txt \
+                    ${FAKEROOT}/usr/share/doc/gnupg-2.1.20
+
+for f in gpg gpgv
+do
+  ln -svf ${f}2.1 ${FAKEROOT}/usr/share/man/man1/$f.1
+  ln -svf ${f}2   ${FAKEROOT}/usr/bin/$f
+done
+unset f
+
+install -v -m644 doc/gnupg.html/* \
+                 ${FAKEROOT}/usr/share/doc/gnupg-2.1.20/html
+install -v -m644 doc/gnupg.{pdf,dvi,ps} \
+                 ${FAKEROOT}/usr/share/doc/gnupg-2.1.20
+
+#################
+} # END OF FILE #
+#################
+

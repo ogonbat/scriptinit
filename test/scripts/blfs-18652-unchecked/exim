@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://mirrors-usa.go-parts.com/eximftp/exim/exim4/exim-4.89.tar.xz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="b569ec80c495dffc54545895e680ed61
+            b4f1623b69c67f10e67ca610ceee56b4"
+REQUIRES="pcre"
+TAGS="preinst"
+POSTINST="now"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -e 's,^BIN_DIR.*$,BIN_DIRECTORY=/usr/sbin,'    \
+    -e 's,^CONF.*$,CONFIGURE_FILE=/etc/exim.conf,' \
+    -e 's,^EXIM_USER.*$,EXIM_USER=exim,'           \
+    -e '/SUPPORT_TLS/s,^#,,'                       \
+    -e '/USE_OPENSSL/s,^#,,'                       \
+    -e 's,^EXIM_MONITOR,#EXIM_MONITOR,' src/EDITME > Local/Makefile
+printf "USE_GDBM = yes\nDBMLIB = -lgdbm\n" >> Local/Makefile
+make
+
+make DESTDIR=${FAKEROOT} install
+install -v -m644 doc/exim.8 ${FAKEROOT}/usr/share/man/man8
+install -v -d -m755 ${FAKEROOT}/usr/share/doc/exim-4.89
+install -v -m644 doc/* ${FAKEROOT}/usr/share/doc/exim-4.89
+ln -sfv exim ${FAKEROOT}/usr/sbin/sendmail
+install -v -d -m750 -o exim -g exim ${FAKEROOT}/var/spool/exim
+
+cat >> ${FAKEROOT}/etc/aliases << "EOF"
+postmaster: root
+MAILER-DAEMON: root
+EOF
+exim -v -bi
+/usr/sbin/exim -bd -q15m
+
+includeBootscript exim
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+groupadd -g 31 exim
+useradd -d /dev/null -c "Exim Daemon" -g exim -s /bin/false -u 31 exim
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+chmod -v a+wt /var/mail
+
+#################
+} # END OF FILE #
+#################
+

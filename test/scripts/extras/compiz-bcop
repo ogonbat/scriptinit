@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="https://github.com/compiz-reloaded/compiz-bcop/releases/download/v0.8.14/compiz-bcop-0.8.14.tar.xz"
+MD5SUMLIST="1988199d2b1c8aa8c6e2e0b0bf0883ea"
+REQUIRES="libxslt"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

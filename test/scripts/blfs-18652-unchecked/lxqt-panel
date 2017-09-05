@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.lxqt.org/lxqt/0.11.1/lxqt-panel-0.11.1.tar.xz"
+MD5SUMLIST="bf84113e02c84c32b90539855a3e6139"
+REQUIRES="kf5-frameworks libdbusmenuqt liblxqt lxmenu-data lxqt-globalkeys lxqt-kguiaddons lxqt-solid menu-cache"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -e 's:<KF5/KWindowSystem/:<:'               \
+    -i plugin-taskbar/lxqttaskgroup.{h,cpp}
+
+sed -e '/kbdinfo.h/i #undef explicit'           \
+    -i plugin-kbindicator/src/x11/kbdlayout.cpp
+
+mkdir -v build
+cd       build
+
+cmake -DCMAKE_INSTALL_PREFIX=$LXQT_PREFIX \
+      -DCMAKE_BUILD_TYPE=Release          \
+      -DPULL_TRANSLATIONS=no              \
+      -DCMAKE_INSTALL_LIBDIR=lib          \
+      ..
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

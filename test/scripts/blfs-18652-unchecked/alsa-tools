@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="ftp://ftp.alsa-project.org/pub/tools/alsa-tools-1.1.3.tar.bz2"
+MD5SUMLIST="b23eaae687d55410b92587c2053b301f"
+REQUIRES="alsa-lib"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+bash -e
+
+rm -rf qlo10k1 Makefile gitcompile
+
+for tool in *
+do
+  case $tool in
+    seq )
+      tool_dir=seq/sbiload
+    ;;
+    * )
+      tool_dir=$tool
+    ;;
+  esac
+
+  pushd $tool_dir
+    ./configure --prefix=/usr
+    make
+    as_root make install
+    as_root /sbin/ldconfig
+  popd
+
+done
+unset tool tool_dir
+
+exit
+
+#################
+} # END OF FILE #
+#################
+

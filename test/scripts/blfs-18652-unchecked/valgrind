@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://valgrind.org/downloads/valgrind-3.12.0.tar.bz2"
+MD5SUMLIST="6eb03c0c10ea917013a7622e483d61bb"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i 's|/doc/valgrind||' docs/Makefile.in
+
+./configure --prefix=/usr \
+            --datadir=/usr/share/doc/valgrind-3.12.0
+make
+
+ln -sfv ld-2.24.so.dbg /lib/ld-linux-x86-64.so.2
+
+prereq:
+
+prereq: false
+
+sed -e 's@prereq:.*@prereq: false@' \
+    -i {helgrind,drd}/tests/pth_cond_destroy_busy.vgtest
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

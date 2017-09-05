@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.vim.org/vim/unix/vim-8.0.586.tar.bz2"
+MD5SUMLIST="b35e794140c196ff59b492b56c1e73db"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+echo '#define SYS_VIMRC_FILE  "/etc/vimrc"' >>  src/feature.h
+echo '#define SYS_GVIMRC_FILE "/etc/gvimrc"' >> src/feature.h
+
+./configure --prefix=/usr \
+            --with-features=huge \
+            --with-tlib=ncursesw
+make
+
+make DESTDIR=${FAKEROOT} install
+
+ln -snfv ../vim/vim80/doc ${FAKEROOT}/usr/share/doc/vim-8.0.586
+
+rsync -avzcP --delete --exclude="/dos/" --exclude="/spell/" \
+    ftp.nluug.nl::Vim/runtime/ ./runtime/
+
+make DESTDIR=${FAKEROOT} -C src installruntime
+vim -c ":helptags ${FAKEROOT}/usr/share/doc/vim-8.0.586" -c ":q"
+
+cat > ${FAKEROOT}/usr/share/applications/gvim.desktop << "EOF"
+[Desktop Entry]
+Name=GVim Text Editor
+Comment=Edit text files
+Comment[pt_BR]=Edite arquivos de texto
+TryExec=gvim
+Exec=gvim -f %F
+Terminal=false
+Type=Application
+Icon=gvim.png
+Categories=Utility;TextEditor;
+StartupNotify=true
+MimeType=text/plain;
+EOF
+
+#################
+} # END OF FILE #
+#################
+

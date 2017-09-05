@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.sourceforge.net/pyqt/QScintilla_gpl-2.10.tar.gz"
+MD5SUMLIST="a61eb0d598b6787de18450574c2ad3b4"
+REQUIRES="chrpath qt5"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+cd Qt4Qt5
+qmake qscintilla.pro
+make
+
+make DESTDIR=${FAKEROOT} install
+
+ln -sfv libqscintilla2_qt5.so.13.0.0 $QT5DIR/lib/libqt5scintilla2.so
+
+install -v -m755 -d $QT5DIR/share/doc/QScintilla-2.10/html
+install -v -m644    ../doc/html-Qt4Qt5/* \
+                    $QT5DIR/share/doc/QScintilla-2.10/html
+
+#################
+} # END OF FILE #
+#################
+

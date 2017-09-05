@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="https://github.com/compiz-reloaded/compiz/releases/download/v0.8.14/compiz-0.8.14.tar.xz"
+MD5SUMLIST="b908dea54a55769243e86adc89a7deb1"
+REQUIRES="cairo glu libjpeg-turbo libxslt startup-notification"
+RECOMMENDS="libwnck marco"
+
+# (*) Install 'libwnck' because it, and it's dependency gtk+3, are required to use GTK window decorations
+# (*) Install 'marco' because it allows Compiz to use the window decoration that is set for Marco
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./autogen.sh --prefix=/usr \
+        --with-gtk=3.0
+make
+
+make DESTDIR=${FAKEROOT} install
+
+cat > ${FAKEROOT}/etc/alternatives/xinitrc/compiz.xinitrc << "EOF"
+compiz ccp &
+exec xterm
+EOF
+
+#################
+} # END OF FILE #
+#################
+

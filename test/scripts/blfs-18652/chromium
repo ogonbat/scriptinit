@@ -1,0 +1,143 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-58.0.3029.81.tar.xz
+          http://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_58.0.3029.81-1_amd64.deb
+          http://mirror.retrosnub.co.uk/apt/google/pool/main/g/google-chrome-stable/google-chrome-stable_48.0.2564.116-1_i386.deb
+          http://www.linuxfromscratch.org/patches/blfs/svn/chromium-58.0.3029.81-system_ffmpeg-1.patch"
+MD5SUMLIST="fe28227f5f4aa05709b9cbd47a5cf426
+            65b7afdac7796e9a1ec21008fa82e403
+            895e877b9bfe5da05a061369c2078626
+            fb61556703070b74aafc7787722198b6"
+REQUIRES="alsa-lib cups dbus desktop-file-utils flac git gtk+2 gtk+3 hicolor-icon-theme libevent libwebp mesa mitkrb ninja nodejs nss pciutils perl-file-basedir pulseaudio python2 usbutils xorg"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+patch -Np1 -i ../chromium-58.0.3029.81-system_ffmpeg-1.patch
+
+sed 's/^config("compiler") {/&\ncflags_cc = [ "-fno-delete-null-pointer-checks" ]/' \
+    -i build/config/linux/BUILD.gn
+
+sed 's/WIDEVINE_CDM_AVAILABLE/&\n\n#define WIDEVINE_CDM_VERSION_STRING "Pinkie Pie"/' \
+    -i third_party/widevine/cdm/stub/widevine_cdm_version.h
+
+for LIB in ffmpeg flac harfbuzz-ng libevent libjpeg \
+           libjpeg_turbo libpng libwebp libxslt yasm; do
+    find -type f -path "*third_party/$LIB/*"     \
+        \! -path "*third_party/$LIB/chromium/*"  \
+        \! -path "*third_party/$LIB/google/*"    \
+        \! -path "*base/third_party/libevent/*"  \
+        \! -regex '.*\.\(gn\|gni\|isolate\|py\)' \
+        -delete
+done
+
+python build/linux/unbundle/replace_gn_files.py \
+    --system-libraries ffmpeg flac harfbuzz-ng libevent libjpeg \
+                       libpng libwebp libxslt yasm
+python third_party/libaddressinput/chromium/tools/update-strings.py
+
+GN_CONFIG=('clang_use_chrome_plugins=false'
+'enable_hangout_services_extension=true'
+'enable_nacl=false'
+'enable_nacl_nonsfi=false'
+'enable_widevine=true'
+'fatal_linker_warnings=false'
+'ffmpeg_branding="Chrome"'
+'fieldtrial_testing_like_official_build=true'
+'is_debug=false'
+'is_clang=false'
+'link_pulseaudio=true'
+'linux_use_bundled_binutils=false'
+'proprietary_codecs=true'
+'remove_webcore_debug_symbols=true'
+'symbol_level=0'
+'treat_warnings_as_errors=false'
+'use_allocator="none"'
+'use_cups=true'
+'use_gconf=false'
+'use_gnome_keyring=false'
+'use_gold=false'
+'use_gtk3=false'
+'use_kerberos=true'
+'use_pulseaudio=true'
+'use_sysroot=false')
+
+sed "/internal\.cc',/a\      'base/callback_helpers.cc'," \
+    -i tools/gn/bootstrap/bootstrap.py
+python tools/gn/bootstrap/bootstrap.py --gn-gen-args "${GN_CONFIG[*]}"
+out/Release/gn gen out/Release --args="${GN_CONFIG[*]}"
+
+mkdir -p third_party/node/linux/node-linux-x64/bin
+ln -s /usr/bin/node third_party/node/linux/node-linux-x64/bin/
+ninja -C out/Release chrome chrome_sandbox chromedriver widevinecdmadapter
+
+install -vDm755  out/Release/chrome \
+                 ${FAKEROOT}/usr/lib/chromium/chromium
+install -vDm4755 out/Release/chrome_sandbox \
+                 ${FAKEROOT}/usr/lib/chromium/chrome-sandbox
+install -vDm755  out/Release/chromedriver \
+                 ${FAKEROOT}/usr/lib/chromium/chromedriver
+ln -svf /usr/lib/chromium/chromium ${FAKEROOT}/usr/bin
+ln -svf /usr/lib/chromium/chromedriver ${FAKEROOT}/usr/bin/
+
+install -vDm644 out/Release/gen/content/content_resources.pak \
+                ${FAKEROOT}/usr/lib/chromium/
+install -vm644 out/Release/{*.pak,*.bin} \
+               ${FAKEROOT}/usr/lib/chromium/
+
+cp -av out/Release/locales ${FAKEROOT}/usr/lib/chromium/
+chown -Rv root:root ${FAKEROOT}/usr/lib/chromium/locales
+
+install -vDm644 out/Release/chrome.1 \
+                ${FAKEROOT}/usr/share/man/man1/chromium.1
+
+for size in 16 32; do
+    install -vDm644 \
+        "chrome/app/theme/default_100_percent/chromium/product_logo_$size.png" \
+        ${FAKEROOT}/usr/share/icons/hicolor/${size}x${size}/apps/chromium.png
+done
+
+for size in 22 24 48 64 128 256; do
+    install -vDm644 "chrome/app/theme/chromium/product_logo_$size.png" \
+        ${FAKEROOT}/usr/share/icons/hicolor/${size}x${size}/apps/chromium.png
+done
+
+cat > ${FAKEROOT}/usr/share/applications/chromium.desktop << "EOF"
+[Desktop Entry]
+Encoding=UTF-8
+Name=Chromium Web Browser
+Comment=Access the Internet
+GenericName=Web Browser
+Exec=chromium %u
+Terminal=false
+Type=Application
+Icon=chromium
+Categories=GTK;Network;WebBrowser;
+MimeType=application/xhtml+xml;text/xml;application/xhtml+xml;text/mml;x-scheme-handler/http;x-scheme-handler/https;
+EOF
+
+mkdir temp
+cd temp
+case $(uname -m) in
+    x86_64) ar -x ../../google-chrome-stable_58.0.3029.81-1_amd64.deb
+    ;;
+    i?86) ar -x ../../google-chrome-stable_48.0.2564.116-1_i386.deb
+    ;;
+esac
+
+tar -xf data.tar.xz
+install -vm755 ../out/Release/libwidevinecdmadapter.so ${FAKEROOT}/usr/lib/chromium/
+install -vm755 opt/google/chrome/libwidevinecdm.so  ${FAKEROOT}/usr/lib/chromium/
+
+#################
+} # END OF FILE #
+#################
+

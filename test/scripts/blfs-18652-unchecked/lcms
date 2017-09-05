@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.sourceforge.net/lcms/lcms-1.19.tar.gz
+          http://www.linuxfromscratch.org/patches/blfs/svn/lcms-1.19-cve_2013_4276-1.patch"
+MD5SUMLIST="8af94611baf20d9646c7c2c285859818
+            dontverify"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+patch -Np1 -i ../lcms-1.19-cve_2013_4276-1.patch
+
+./configure --prefix=/usr --disable-static
+make
+
+make DESTDIR=${FAKEROOT} install
+install -v -m755 -d ${FAKEROOT}/usr/share/doc/lcms-1.19
+install -v -m644    README.1ST doc/* \
+                    ${FAKEROOT}/usr/share/doc/lcms-1.19
+
+#################
+} # END OF FILE #
+#################
+

@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://transmission.cachefly.net/transmission-2.92.tar.xz"
+MD5SUMLIST="3fce404a436e3cd7fde80fb6ed61c264"
+REQUIRES="curl libevent openssl"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr
+make
+
+# (*) Do not build QT GUI
+#pushd qt
+#  qmake qtr.pro
+#  make
+#popd
+
+make DESTDIR=${FAKEROOT} install
+
+# (*) Do not build QT GUI
+#make DESTDIR=${FAKEROOT} INSTALL_ROOT=/usr -C qt install
+#
+#install -m644 qt/transmission-qt.desktop ${FAKEROOT}/usr/share/applications/transmission-qt.desktop
+#install -m644 qt/icons/transmission.png  ${FAKEROOT}/usr/share/pixmaps/transmission-qt.png
+
+#################
+} # END OF FILE #
+#################
+

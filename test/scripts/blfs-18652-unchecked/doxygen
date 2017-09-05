@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.stack.nl/pub/doxygen/doxygen-1.8.13.src.tar.gz"
+MD5SUMLIST="0fa414975f8cd6d30e126c28327c1f7c"
+REQUIRES="cmake"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+mkdir -v build
+cd       build
+
+cmake -G "Unix Makefiles"         \
+      -DCMAKE_BUILD_TYPE=Release  \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -Wno-dev ..
+
+make
+
+cmake -DDOC_INSTALL_DIR=share/doc/doxygen-1.8.13 -Dbuild_doc=ON ..
+
+make docs
+
+make DESTDIR=${FAKEROOT} install
+install -vm644 ../doc/*.1 ${FAKEROOT}/usr/share/man/man1
+
+#################
+} # END OF FILE #
+#################
+

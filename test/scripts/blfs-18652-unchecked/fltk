@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://fltk.org/pub/fltk/1.3.4/fltk-1.3.4-source.tar.gz"
+MD5SUMLIST="c0e43ac259ac8c5d0f7634566e21e3f8"
+REQUIRES="x7lib"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i -e '/cat./d' documentation/Makefile
+
+./configure --prefix=/usr    \
+            --enable-shared
+make
+
+make -C documentation html
+
+make DESTDIR=${FAKEROOT} docdir=/usr/share/doc/fltk-1.3.4 install
+
+make DESTDIR=${FAKEROOT} -C test          docdir=/usr/share/doc/fltk-1.3.4 install-linux
+make DESTDIR=${FAKEROOT} -C documentation docdir=/usr/share/doc/fltk-1.3.4 install-linux
+
+#################
+} # END OF FILE #
+#################
+

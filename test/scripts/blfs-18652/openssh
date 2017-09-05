@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-7.5p1.tar.gz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="652fdc7d8392f112bef11cacf7e69e23
+            b4f1623b69c67f10e67ca610ceee56b4"
+REQUIRES="openssl"
+TAGS="preinst"
+POSTINST="true"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr                     \
+            --sysconfdir=/etc/ssh             \
+            --with-md5-passwords              \
+            --with-privsep-path=/var/lib/sshd
+make
+
+make DESTDIR=${FAKEROOT} install
+install -v -m755    contrib/ssh-copy-id ${FAKEROOT}/usr/bin
+
+install -v -m644    contrib/ssh-copy-id.1 \
+                    ${FAKEROOT}/usr/share/man/man1
+install -v -m755 -d ${FAKEROOT}/usr/share/doc/openssh-7.5p1
+install -v -m644    INSTALL LICENCE OVERVIEW README* \
+                    ${FAKEROOT}/usr/share/doc/openssh-7.5p1
+
+# (*) Example configuration
+#echo "PermitRootLogin no" >> /etc/ssh/sshd_config
+
+# (*) Example configuration
+#ssh-keygen
+#ssh-copy-id -i ~/.ssh/id_rsa.pub REMOTE_USERNAME@REMOTE_HOSTNAME
+
+# (*) Example configuration
+#echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
+#echo "ChallengeResponseAuthentication no" >> /etc/ssh/sshd_config
+
+# (*) Example configuration
+#sed 's@d/login@d/sshd@g' /etc/pam.d/login > /etc/pam.d/sshd
+#chmod 644 /etc/pam.d/sshd
+#echo "UsePAM yes" >> /etc/ssh/sshd_config
+
+includeBootscript sshd
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+install  -v -m700 -d /var/lib/sshd
+chown    -v root:sys /var/lib/sshd
+
+groupadd -g 50 sshd
+useradd  -c 'sshd PrivSep' \
+         -d /var/lib/sshd  \
+         -g sshd           \
+         -s /bin/false     \
+         -u 50 sshd
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+# (*) (Re)generate SSH keys
+for algo in rsa dsa ecdsa ed25519; do
+    yes | ssh-keygen -N "" -t ${algo} -f /etc/ssh/ssh_host_${algo}_key
+done
+
+#################
+} # END OF FILE #
+#################
+

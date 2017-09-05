@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="ftp://tug.org/texlive/historic/2016/texlive-20160523b-source.tar.xz
+          ftp://tug.org/texlive/historic/2016/texlive-20160523b-texmf.tar.xz
+          http://www.linuxfromscratch.org/patches/blfs/svn/texlive-20160523b-source-upstream_fixes-2.patch
+          http://www.linuxfromscratch.org/patches/blfs/svn/texlive-20160523b-texmf-upstream_fixes-1.patch"
+MD5SUMLIST="1e75db3412b3e2945fa94b0a423a29c7
+            dontverify
+            dontverify
+            dontverify"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+# (*) Utilize the ld.so.conf directory
+mkdir -pv ${FAKEROOT}/etc/ld.so.conf.d
+
+cat >> ${FAKEROOT}/etc/ld.so.conf.d/texlive.conf << EOF
+# Begin texlive 2016 addition
+
+/opt/texlive/2016/lib
+
+# End texlive 2016 addition
+EOF
+
+export TEXARCH=$(uname -m | sed -e 's/i.86/i386/' -e 's/$/-linux/')
+
+patch -Np1 -i ../texlive-20160523b-source-upstream_fixes-2.patch
+
+mkdir texlive-build
+cd texlive-build
+
+../configure                                        \
+    --prefix=/opt/texlive/2016                      \
+    --bindir=/opt/texlive/2016/bin/$TEXARCH         \
+    --datarootdir=/opt/texlive/2016                 \
+    --includedir=/opt/texlive/2016/include          \
+    --infodir=/opt/texlive/2016/texmf-dist/doc/info \
+    --libdir=/opt/texlive/2016/lib                  \
+    --mandir=/opt/texlive/2016/texmf-dist/doc/man   \
+    --disable-native-texlive-build                  \
+    --disable-static --enable-shared                \
+    --with-system-cairo                             \
+    --with-system-fontconfig                        \
+    --with-system-freetype2                         \
+    --with-system-gmp                               \
+    --with-system-graphite2                         \
+    --with-system-harfbuzz                          \
+    --with-system-icu                               \
+    --with-system-libgs                             \
+    --with-system-libpaper                          \
+    --with-system-libpng                            \
+    --with-system-mpfr                              \
+    --with-system-pixman                            \
+    --with-system-poppler                           \
+    --with-system-xpdf                              \
+    --with-system-zlib                              \
+    --with-banner-add=" - BLFS"
+
+make
+
+make DESTDIR=${FAKEROOT} install-strip
+ldconfig
+make DESTDIR=${FAKEROOT} texlinks
+mkdir -pv ${FAKEROOT}/opt/texlive/2016/tlpkg/TeXLive/
+install -v -m644 ../texk/tests/TeXLive/* ${FAKEROOT}/opt/texlive/2016/tlpkg/TeXLive/
+
+tar -xf ../../texlive-20160523b-texmf.tar.xz -C ${FAKEROOT}/opt/texlive/2016 --strip-components=1
+pushd ${FAKEROOT}/opt/texlive/2016
+patch -Np1 -i ${FAKEROOT}/sources/texlive-20160523b-texmf-upstream_fixes-1.patch
+popd
+
+mktexlsr
+fmtutil-sys --all
+mtxrun --generate
+
+sed -i '/^mpost,/d' ${FAKEROOT}/opt/texlive/2016/texmf-dist/web2c/texmf.cnf
+fmtutil-sys --all
+
+#################
+} # END OF FILE #
+#################
+

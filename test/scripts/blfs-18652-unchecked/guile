@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.gnu.org/pub/gnu/guile/guile-2.2.2.tar.xz"
+MD5SUMLIST="d3c002bcf92dbf68f6de45803874db0f"
+REQUIRES="gc libffi libunistring"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/guile-2.2.2
+make
+make html
+
+makeinfo --plaintext -o doc/r5rs/r5rs.txt doc/r5rs/r5rs.texi
+makeinfo --plaintext -o doc/ref/guile.txt doc/ref/guile.texi
+
+make DESTDIR=${FAKEROOT} install
+make DESTDIR=${FAKEROOT} install-html
+
+mv ${FAKEROOT}/usr/lib/libguile-*-gdb.scm ${FAKEROOT}/usr/share/gdb/auto-load/usr/lib
+mv ${FAKEROOT}/usr/share/doc/guile-2.2.2/{guile.html,ref}
+mv ${FAKEROOT}/usr/share/doc/guile-2.2.2/r5rs{.html,}
+
+find examples -name "Makefile*" -delete
+cp -vR examples   ${FAKEROOT}/usr/share/doc/guile-2.2.2
+
+for DIRNAME in r5rs ref; do
+  install -v -m644  doc/${DIRNAME}/*.txt \
+                    ${FAKEROOT}/usr/share/doc/guile-2.2.2/${DIRNAME}
+done
+unset DIRNAME
+
+#################
+} # END OF FILE #
+#################
+

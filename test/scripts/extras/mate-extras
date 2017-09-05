@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+REQUIRES="atril caja-dropbox caja-extensions engrampa eom mate-applets mate-calc mate-icon-theme-faenza mate-indicator-applet mate-netbook mate-sensors-applet mate-terminal mate-user-share mate-utils mozo pluma python-caja"
+TAGS="group"
+

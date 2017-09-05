@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://fcron.free.fr/archives/fcron-3.2.0.src.tar.gz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="4b031c2fba32a98fa814d1557158b0e9
+            b4f1623b69c67f10e67ca610ceee56b4"
+TAGS="preinst"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+cat >> ${FAKEROOT}/etc/syslog.conf << "EOF"
+# Begin fcron addition to /etc/syslog.conf
+
+cron.* -/var/log/cron.log
+
+# End fcron addition
+EOF
+
+/etc/rc.d/init.d/sysklogd reload
+
+./configure --prefix=/usr          \
+            --sysconfdir=/etc      \
+            --localstatedir=/var   \
+            --without-sendmail     \
+            --with-boot-install=no \
+            --with-systemdsystemunitdir=no
+make
+
+make DESTDIR=${FAKEROOT} install
+
+includeBootscript fcron
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+groupadd -g 22 fcron
+useradd -d /dev/null -c "Fcron User" -g fcron -s /bin/false -u 22 fcron
+
+#################
+} # END OF FILE #
+#################
+

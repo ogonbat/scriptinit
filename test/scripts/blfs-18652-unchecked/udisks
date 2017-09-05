@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://hal.freedesktop.org/releases/udisks-1.0.5.tar.gz"
+MD5SUMLIST="70d48dcfe523a74cd7c7fbbc2847fcdd"
+REQUIRES="dbus-glib libatasmart libgudev lvm2 parted polkit sg3_utils"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed 's@#include <stdio\.h>@#include <sys/stat.h>\n#include <stdio.h>@' \
+    -i src/helpers/job-drive-detach.c
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var
+make
+
+make DESTDIR=${FAKEROOT} profiledir=/etc/bash_completion.d install
+
+#################
+} # END OF FILE #
+#################
+

@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://anduin.linuxfromscratch.org/BLFS/juffed/juffed-0.10.r71.gc3c1a3f.tar.xz"
+MD5SUMLIST="5d211f5aadcb3d7365b5a6127d3d275f"
+REQUIRES="qscintilla"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i 's/"64"/""/' cmake/LibSuffix.cmake
+
+mkdir -v build
+cd       build
+
+cmake -DCMAKE_INSTALL_PREFIX=$LXQT_PREFIX \
+      -DCMAKE_BUILD_TYPE=Release          \
+      -DBUILD_TERMINAL=ON                 \
+      -DUSE_QT5=true                      \
+      ..
+
+LIBRARY_PATH=$LXQT_PREFIX/lib make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

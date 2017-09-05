@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://www.x.org/pub/individual/xserver/xorg-server-1.19.3.tar.bz2
+          http://www.linuxfromscratch.org/patches/blfs/svn/xorg-server-1.19.3-add_prime_support-1.patch"
+MD5SUMLIST="015d2fc4b9f2bfe7a626edb63a62c65e
+            45563dbf8f46e54267a13d2a9289ed94"
+REQUIRES="libepoxy openssl pixman x7font xkeyboard-config xorg-env"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+patch -Np1 -i ../xorg-server-1.19.3-add_prime_support-1.patch
+
+./configure $XORG_CONFIG            \
+           --enable-glamor          \
+           --enable-install-setuid  \
+           --enable-suid-wrapper    \
+           --disable-systemd-logind \
+           --with-xkb-output=/var/lib/xkb
+make
+
+make DESTDIR=${FAKEROOT} install
+mkdir -pv ${FAKEROOT}/etc/X11/xorg.conf.d
+cat >> ${FAKEROOT}/etc/sysconfig/createfiles << "EOF"
+/tmp/.ICE-unix dir 1777 root root
+/tmp/.X11-unix dir 1777 root root
+EOF
+
+#################
+} # END OF FILE #
+#################
+

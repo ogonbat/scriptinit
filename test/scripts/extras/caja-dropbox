@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="http://pub.mate-desktop.org/releases/1.18/caja-dropbox-1.18.0.tar.xz"
+MD5SUMLIST="f35289c4e93831f8f65bfc6d06f68dfc"
+REQUIRES="caja pygtk python-docutils"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./autogen.sh --prefix=/usr \
+        --sysconfdir=/etc/mate/1.18 \
+        --localstatedir=/var \
+        --mandir=/usr/share/man \
+        --libexecdir=/usr/lib/caja-dropbox \
+        --disable-static
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

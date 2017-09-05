@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="ftp://ftp.isc.org/isc/bind9/9.11.1/bind-9.11.1.tar.gz"
+MD5SUMLIST="c384ab071d902bac13487c1268e5a32f"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr
+make -C lib/dns
+make -C lib/isc
+make -C lib/bind9
+make -C lib/isccfg
+make -C lib/lwres
+make -C bin/dig
+
+make DESTDIR=${FAKEROOT} -C bin/dig install
+
+#################
+} # END OF FILE #
+#################
+

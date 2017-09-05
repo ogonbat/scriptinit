@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://www.x.org/pub/individual/lib/libXfont-1.5.2.tar.bz2
+          https://www.x.org/pub/individual/app/bdftopcf-1.0.5.tar.bz2
+          https://www.x.org/pub/individual/font/font-adobe-100dpi-1.0.3.tar.bz2
+          https://www.x.org/pub/individual/font/font-adobe-75dpi-1.0.3.tar.bz2
+          https://www.x.org/pub/individual/font/font-jis-misc-1.0.3.tar.bz2
+          https://www.x.org/pub/individual/font/font-daewoo-misc-1.0.3.tar.bz2
+          https://www.x.org/pub/individual/font/font-isas-misc-1.0.3.tar.bz2"
+MD5SUMLIST="254ee42bd178d18ebc7a73aacfde7f79
+            53a48e1fdfec29ab2e89f86d4b7ca902
+            1347c3031b74c9e91dc4dfa53b12f143
+            6c9f26c92393c0756f3e8d614713495b
+            cb7b57d7800fd9e28ec35d85761ed278
+            0571bf77f8fab465a5454569d9989506
+            a2401caccbdcf5698e001784dbd43f1a"
+REQUIRES="x7font xcursor-themes xorg-env"
+TAGS="multi"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+case $(basename "$PWD") in
+  libXfont-[0-9]* )
+    ./configure $XORG_CONFIG --disable-devel-docs
+  ;;
+  * )
+    ./configure $XORG_CONFIG
+  ;;
+esac
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

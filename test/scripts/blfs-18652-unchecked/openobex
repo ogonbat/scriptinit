@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.sourceforge.net/openobex/openobex-1.7.2-Source.tar.gz"
+MD5SUMLIST="f6e0b6cb7dcfd731460a7e9a91429a3a"
+REQUIRES="cmake libusb"
+TAGS="preinst"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+mkdir build
+cd    build
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr      \
+      -DCMAKE_INSTALL_LIBDIR=/usr/lib  \
+      -DCMAKE_BUILD_TYPE=Release       \
+      -Wno-dev                         \
+      ..
+make
+
+make DESTDIR=${FAKEROOT} install
+if [ -d ${FAKEROOT}/usr/share/doc/openobex ]; then
+  mv -fv ${FAKEROOT}/usr/share/doc/{openobex,openobex-1.7.2}
+fi
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+groupadd -g 90 plugdev
+
+#################
+} # END OF FILE #
+#################
+

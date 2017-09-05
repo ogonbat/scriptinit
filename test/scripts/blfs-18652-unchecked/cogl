@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.gnome.org/pub/gnome/sources/cogl/1.22/cogl-1.22.2.tar.xz"
+MD5SUMLIST="d53b708ca7c4af03d7254e46945d6b33"
+REQUIRES="cairo gdk-pixbuf glu mesa pango"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i 's/^#if COGL/#ifdef COGL/' cogl/winsys/cogl-winsys-egl.c
+
+./configure --prefix=/usr --enable-gles1 --enable-gles2
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

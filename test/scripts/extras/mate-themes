@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="http://pub.mate-desktop.org/releases/themes/3.22/mate-themes-3.22.10.tar.xz"
+MD5SUMLIST="5fd37a1afa37666d8d8bd8a94cf82cdf"
+REQUIRES="gtk+2 icon-naming-utils mate-common"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./autogen.sh --prefix=/usr \
+        --sysconfdir=/etc/mate/1.18 \
+        --localstatedir=/var \
+        --mandir=/usr/share/man \
+        --libexecdir=/usr/lib/mate-themes \
+        --disable-static \
+        --enable-all-themes
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

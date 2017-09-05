@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://sourceforge.net/projects/enlightenment/files/imlib2-src/1.4.10/imlib2-1.4.10.tar.bz2"
+MD5SUMLIST="a0de8524592bbd9f24fcc6cb8352137c"
+REQUIRES="x7lib"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr --disable-static
+make
+
+make DESTDIR=${FAKEROOT} install
+install -v -m755 -d ${FAKEROOT}/usr/share/doc/imlib2-1.4.10
+install -v -m644    doc/{*.gif,index.html} \
+                    ${FAKEROOT}/usr/share/doc/imlib2-1.4.10
+
+#################
+} # END OF FILE #
+#################
+

@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.us.xiph.org/releases/speex/speex-1.2rc2.tar.gz
+          http://downloads.us.xiph.org/releases/speex/speexdsp-1.2rc3.tar.gz"
+MD5SUMLIST="6ae7db3bab01e1d4b86bacfa8ca33e81
+            dontverify"
+REQUIRES="libogg"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/speex-1.2rc2
+make
+
+make DESTDIR=${FAKEROOT} install
+
+cd ..
+tar -xf speexdsp-1.2rc3.tar.gz
+cd speexdsp-1.2rc3
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/speexdsp-1.2rc3
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.gnome.org/pub/gnome/sources/evince/3.22/evince-3.22.1.tar.xz"
+MD5SUMLIST="1251d4527b5181165d56c588f847250c"
+REQUIRES="adwaita-icon-theme gsettings-desktop-schemas gtk+3 itstool libxml2"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr                     \
+            --enable-compile-warnings=minimum \
+            --enable-introspection            \
+            --disable-static
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

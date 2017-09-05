@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://github.com/apple/cups/releases/download/v2.2.3/cups-2.2.3-source.tar.gz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="006a8156680a516e43c59034e31df8bf
+            b4f1623b69c67f10e67ca610ceee56b4"
+REQUIRES="gnutls"
+RECOMMENDS="xdg-utils"
+TAGS="preinst"
+
+# (*) Install 'xdg-utils' because it avoids having to explicitly set a browser as the default HTML viewer
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+# (*) Not required if installing xdg-utils
+#sed -i 's#@CUPS_HTMLVIEW@#firefox#' desktop/cups.desktop.in
+
+sed -i 's:555:755:g;s:444:644:g' Makedefs.in
+sed -i '/MAN.EXT/s:.gz::g' configure config-scripts/cups-manpages.m4
+sed -i '/LIBGCRYPTCONFIG/d' config-scripts/cups-ssl.m4
+
+aclocal  -I config-scripts
+autoconf -I config-scripts
+
+# (*) Fix compilation issue on i486
+CUPS_CXXFLAGS="${CXXFLAGS}"
+case $(uname -m) in
+    i?86) CUPS_CXXFLAGS="${CUPS_CXXFLAGS} -march=i486" ;;
+esac
+
+CXXFLAGS="${CUPS_CXXFLAGS}" \
+CC=gcc \
+./configure --libdir=/usr/lib            \
+            --disable-systemd            \
+            --with-rcdir=/tmp/cupsinit   \
+            --with-system-groups=lpadmin \
+            --with-docdir=/usr/share/cups/doc-2.2.3
+make
+
+make BUILDROOT=${FAKEROOT} install
+rm -rf ${FAKEROOT}/tmp/cupsinit
+ln -svnf ../cups/doc-2.2.3 ${FAKEROOT}/usr/share/doc/cups-2.2.3
+
+echo "ServerName ${FAKEROOT}/var/run/cups/cups.sock" > ${FAKEROOT}/etc/cups/client.conf
+
+# (*) Will be executed by GTK+
+#gtk-update-icon-cache
+
+cat > ${FAKEROOT}/etc/pam.d/cups << "EOF"
+# Begin /etc/pam.d/cups
+
+auth    include system-auth
+account include system-account
+session include system-session
+
+# End /etc/pam.d/cups
+EOF
+
+includeBootscript cups
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+useradd -c "Print Service User" -d /var/spool/cups -g lp -s /bin/false -u 9 lp
+
+groupadd -g 19 lpadmin
+
+# (*) Example configuration
+#usermod -a -G lpadmin <username>
+
+#################
+} # END OF FILE #
+#################
+

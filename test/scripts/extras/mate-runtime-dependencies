@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+REQUIRES="consolekit gnome-keyring gvfs hicolor-icon-theme yelp"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+echo "exec ck-launch-session mate-session" \
+        > ${FAKEROOT}/etc/alternatives/xinitrc/Mate_ConsoleKit.xinitrc
+
+#################
+} # END OF FILE #
+#################
+

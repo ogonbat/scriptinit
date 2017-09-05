@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="https://launchpad.net/libindicator/12.10/12.10.1/+download/libindicator-12.10.1.tar.gz"
+MD5SUMLIST="5fd4d6bab339fc9611078b64c44a85a8"
+REQUIRES="gtk+3"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed 's/gtk_icon_info_free/g_object_unref/g' \
+        -i libindicator/indicator-image-helper.c
+
+sed 's/LIBINDICATOR_LIBS+="$LIBM"/LIBINDICATOR_LIBS+=" $LIBM"/g' \
+        -i configure
+
+./configure --prefix=/usr
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

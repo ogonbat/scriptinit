@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/wireless_tools.29.tar.gz
+          http://www.linuxfromscratch.org/patches/blfs/svn/wireless_tools-29-fix_iwlist_scanning-1.patch"
+MD5SUMLIST="e06c222e186f7cc013fd272d023710cb
+            dontverify"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+patch -Np1 -i ../wireless_tools-29-fix_iwlist_scanning-1.patch
+
+make
+
+make PREFIX=${FAKEROOT}/usr INSTALL_MAN=/usr/share/man install
+
+#################
+} # END OF FILE #
+#################
+

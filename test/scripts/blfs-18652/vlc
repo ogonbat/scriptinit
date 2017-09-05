@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://get.videolan.org/vlc/2.2.4/vlc-2.2.4.tar.xz
+          http://www.linuxfromscratch.org/patches/blfs/svn/vlc-2.2.4-ffmpeg3-1.patch
+          http://www.linuxfromscratch.org/patches/blfs/svn/vlc-2.2.4-gcc6_fixes-1.patch"
+MD5SUMLIST="55666c9898f658c7fcca12725bf7dd1b
+            00b03cf5656f8da349b87052dd223d7b
+            fbbb35b097d03c88d42ac211987f30bd"
+REQUIRES="alsa-lib ffmpeg liba52 libgcrypt libmad lua xorg-server"
+POSTINST="true"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+patch -Np1 -i ../vlc-2.2.4-ffmpeg3-1.patch
+patch -Np1 -i ../vlc-2.2.4-gcc6_fixes-1.patch
+
+CFLAGS="-DLUA_COMPAT_5_1" \
+./configure --prefix=/usr --disable-atmo
+
+make
+
+make DESTDIR=${FAKEROOT} docdir=/usr/share/doc/vlc-2.2.4 install
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+gtk-update-icon-cache
+update-desktop-database
+
+#################
+} # END OF FILE #
+#################
+

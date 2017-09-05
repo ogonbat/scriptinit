@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://mesa.freedesktop.org/archive/mesa-17.0.4.tar.xz
+          http://www.linuxfromscratch.org/patches/blfs/svn/mesa-17.0.4-add_xdemos-1.patch"
+MD5SUMLIST="4a16cfc1c6d034cc17314b866eada628
+            48cce4c6a8ae116c4e00ae128ba97603"
+REQUIRES="elfutils libdrm llvm python2 x7lib xorg-env"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+# (*) Fix for i486 (https://bugs.freedesktop.org/show_bug.cgi?id=93089#c10)
+if [ "$(uname -m)" != "x86_64" ]; then
+    sed 's@uint64_t intel_debug @//uint64_t intel_debug @g' \
+        -i src/mesa/drivers/dri/i965/intel_debug.c
+    sed 's@(void) p_atomic_cmpxchg@//(void) p_atomic_cmpxchg@g' \
+        -i src/mesa/drivers/dri/i965/intel_debug.c
+fi
+
+patch -Np1 -i ../mesa-17.0.4-add_xdemos-1.patch
+
+GLL_DRV="i915,r600,nouveau,radeonsi,svga,swrast"
+
+sed -i "/pthread_stubs_possible=/s/yes/no/" configure.ac
+
+./autogen.sh CFLAGS='-O2' CXXFLAGS='-O2'    \
+            --prefix=$XORG_PREFIX           \
+            --sysconfdir=/etc               \
+            --enable-texture-float          \
+            --enable-osmesa                 \
+            --enable-xa                     \
+            --enable-glx-tls                \
+            --with-egl-platforms="drm,x11"  \
+            --with-gallium-drivers=$GLL_DRV
+
+unset GLL_DRV
+
+make
+
+make -C xdemos DEMOS_PREFIX=$XORG_PREFIX
+
+make DESTDIR=${FAKEROOT} install
+
+make DESTDIR=${FAKEROOT} -C xdemos DEMOS_PREFIX=$XORG_PREFIX install
+
+install -v -dm755 ${FAKEROOT}/usr/share/doc/mesa-17.0.4
+cp -rfv docs/* ${FAKEROOT}/usr/share/doc/mesa-17.0.4
+
+#################
+} # END OF FILE #
+#################
+

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://archive.xfce.org/src/panel-plugins/xfce4-xkb-plugin/0.7/xfce4-xkb-plugin-0.7.1.tar.bz2"
+MD5SUMLIST="2f68e0d53baf68ecc1a7165ad33c26a9"
+REQUIRES="librsvg libxklavier xfce4-panel"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -e 's|xfce4/panel-plugins|xfce4/panel/plugins|' \
+    -i panel-plugin/{Makefile.in,xkb-plugin.desktop.in.in}
+
+./configure --prefix=/usr         \
+            --libexecdir=/usr/lib \
+            --disable-debug
+
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

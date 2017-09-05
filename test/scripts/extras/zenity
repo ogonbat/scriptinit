@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="https://ftp.gnome.org/pub/gnome/sources/zenity/3.24/zenity-3.24.0.tar.xz"
+MD5SUMLIST="c905318c3ca76172d53829ed2471ac53"
+REQUIRES="gtk+3 itstool"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr \
+        --localstatedir=/var \
+        --mandir=/usr/share/man
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

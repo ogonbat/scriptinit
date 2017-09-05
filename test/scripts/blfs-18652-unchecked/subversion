@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://www.apache.org/dist/subversion/subversion-1.9.5.tar.bz2"
+MD5SUMLIST="9fcbae352a5efe73d46a88c97c6bba14"
+REQUIRES="apr-util sqlite"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --with-apache-libexecdir
+make
+
+make DESTDIR=${FAKEROOT} install
+
+install -v -m755 -d ${FAKEROOT}/usr/share/doc/subversion-1.9.5
+cp      -v -R       doc/* \
+                    ${FAKEROOT}/usr/share/doc/subversion-1.9.5
+
+#################
+} # END OF FILE #
+#################
+

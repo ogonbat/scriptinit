@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://fpdownload.adobe.com/pub/flashplayer/pdc/25.0.0.148/flash_player_npapi_linux.x86_64.tar.gz
+          https://fpdownload.adobe.com/pub/flashplayer/pdc/25.0.0.148/flash_player_npapi_linux.i386.tar.gz
+          https://fpdownload.adobe.com/pub/flashplayer/pdc/25.0.0.148/flash_player_ppapi_linux.i386.tar.gz
+          https://fpdownload.adobe.com/pub/flashplayer/pdc/25.0.0.148/flash_player_ppapi_linux.x86_64.tar.gz
+          https://github.com/foutrelis/chromium-launcher/archive/v3.tar.gz"
+MD5SUMLIST="d03f607cf2814884d0db497dff934b34
+            90f020bbee838657ee8ef5ff93557380
+            1e687be20a421d6844140afa56006cfd
+            d5e90e296dbd0b8362df2fa4f418d667
+            bf6c9291237e4090d348ea126d26a9ec"
+REQUIRES="cairo curl graphite2 gtk+2 libffi mesa nss pcre"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+mkdir flashplayer_npapi
+pushd flashplayer_npapi
+case $(uname -m) in
+    x86_64) tar -xf ../../flash_player_npapi_linux.x86_64.tar.gz
+    ;;
+    i?86) tar -xf ../../flash_player_npapi_linux.i386.tar.gz
+    ;;
+esac
+
+install -vDm755 libflashplayer.so ${FAKEROOT}/usr/lib/mozilla/plugins/libflashplayer.so
+
+popd
+
+mkdir flashplayer_ppapi
+pushd flashplayer_ppapi
+case $(uname -m) in
+    x86_64) tar -xf ../../flash_player_ppapi_linux.x86_64.tar.gz
+    ;;
+    i?86) tar -xf ../../flash_player_ppapi_linux.i386.tar.gz
+    ;;
+esac
+
+install -vDm755 libpepflashplayer.so ${FAKEROOT}/usr/lib/PepperFlash/libpepflashplayer.so
+
+popd
+
+tar -xf ../v3.tar.gz
+pushd chromium-launcher-3
+make PREFIX=/usr
+
+make DESTDIR=${FAKEROOT} PREFIX=/usr install-strip
+
+popd
+
+#################
+} # END OF FILE #
+#################
+

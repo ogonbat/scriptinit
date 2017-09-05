@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://llvm.org/releases/3.9.1/llvm-3.9.1.src.tar.xz"
+MD5SUMLIST="3259018a7437e157f3642df80f1983ea"
+REQUIRES="cmake python2"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+mkdir -v build
+cd       build
+
+CC=gcc CXX=g++                           \
+cmake -DCMAKE_INSTALL_PREFIX=/opt/llvm3  \
+      -DCMAKE_BUILD_TYPE=Release         \
+      -DLLVM_BUILD_LLVM_DYLIB=ON         \
+      -DLLVM_LINK_LLVM_DYLIB=ON          \
+      -DLLVM_TARGETS_TO_BUILD="host"     \
+      -DLLVM_INSTALL_UTILS=ON            \
+      -Wno-dev ..
+make
+
+# (*) Utilize the ld.so.conf directory
+mkdir -pv ${FAKEROOT}/etc/ld.so.conf.d
+
+echo "/opt/llvm3/lib" >> ${FAKEROOT}/etc/ld.so.conf.d/llvm3.conf
+make DESTDIR=${FAKEROOT} install
+ldconfig
+ln -sfv ${FAKEROOT}/opt/llvm3/bin/FileCheck ${FAKEROOT}/usr/bin
+
+#################
+} # END OF FILE #
+#################
+

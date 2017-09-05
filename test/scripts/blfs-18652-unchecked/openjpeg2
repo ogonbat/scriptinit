@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://github.com/uclouvain/openjpeg/archive/v2.1.2.tar.gz"
+MD5SUMLIST="40a7bfdcc66280b3c1402a0eb1a27624"
+REQUIRES="cmake"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+mkdir -v build
+cd       build
+
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr ..
+make
+
+make DESTDIR=${FAKEROOT} install
+
+pushd ../doc
+for man in man/man?/* ; do
+    install -v -D -m 644 $man ${FAKEROOT}/usr/share/$man
+done
+popd
+
+#################
+} # END OF FILE #
+#################
+

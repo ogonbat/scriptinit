@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://github.com/libfuse/libfuse/releases/download/fuse-2.9.7/fuse-2.9.7.tar.gz"
+MD5SUMLIST="9bd4ce8184745fd3d000ca2692adacdb"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --exec-prefix=/
+
+make
+make DESTDIR=$PWD/Dest install
+
+cp -v Dest/lib/*.so.*             ${FAKEROOT}/lib
+ln -sv ../../lib/libfuse.so.2     ${FAKEROOT}/usr/lib/libfuse.so
+ln -sv ../../lib/libulockmgr.so.1 ${FAKEROOT}/usr/lib/libulockmgr.so
+
+cp -v Dest/lib/pkgconfig/* ${FAKEROOT}/usr/lib/pkgconfig
+                                                         
+cp -v Dest/bin/*           ${FAKEROOT}/bin
+cp -v Dest/sbin/mount.fuse ${FAKEROOT}/sbin
+install -vdm755                 ${FAKEROOT}/usr/include/fuse
+cp -v Dest/usr/include/*.h      ${FAKEROOT}/usr/include
+cp -v Dest/usr/include/fuse/*.h ${FAKEROOT}/usr/include/fuse/
+
+cp -v Dest/usr/share/man/man1/* ${FAKEROOT}/usr/share/man/man1
+
+#################
+} # END OF FILE #
+#################
+

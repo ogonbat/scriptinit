@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://tug.ctan.org/support/xindy/base/xindy-2.5.1.tar.gz
+          http://www.linuxfromscratch.org/patches/blfs/svn/xindy-2.5.1-upstream_fixes-1.patch"
+MD5SUMLIST="221acfeeb0f6f8388f89a59c56491041
+            dontverify"
+REQUIRES="clisp texlive"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+export TEXARCH=$(uname -m | sed -e 's/i.86/i386/' -e 's/$/-linux/')
+
+sed -i "s/ grep -v '^;'/ awk NF/" make-rules/inputenc/Makefile.in
+
+patch -Np1 -i ../xindy-2.5.1-upstream_fixes-1.patch
+
+./configure --prefix=/opt/texlive/2016              \
+            --bindir=/opt/texlive/2016/bin/$TEXARCH \
+            --datarootdir=/opt/texlive/2016         \
+            --includedir=/usr/include               \
+            --libdir=/opt/texlive/2016/texmf-dist   \
+            --mandir=/opt/texlive/2016/texmf-dist/doc/man
+
+make LC_ALL=POSIX
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

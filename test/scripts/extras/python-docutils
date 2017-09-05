@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="https://downloads.sourceforge.net/project/docutils/docutils/0.13.1/docutils-0.13.1.tar.gz"
+MD5SUMLIST="ea4a893c633c788be9b8078b6b305d53"
+REQUIRES="python2"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+python setup.py install --root=${FAKEROOT}
+
+#################
+} # END OF FILE #
+#################
+

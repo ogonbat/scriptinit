@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs921/ghostscript-9.21.tar.gz"
+MD5SUMLIST="5f213281761d2750fcf27476c404d17f"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+rm -rf freetype lcms2 jpeg libpng
+
+rm -rf zlib
+
+./configure --prefix=/usr           \
+            --disable-compile-inits \
+            --enable-dynamic        \
+            --with-system-libtiff
+make
+
+make so
+
+make DESTDIR=${FAKEROOT} install
+
+make DESTDIR=${FAKEROOT} soinstall
+install -v -m644 base/*.h ${FAKEROOT}/usr/include/ghostscript
+ln -v -s ghostscript ${FAKEROOT}/usr/include/ps
+
+ln -sfvn ../ghostscript/9.21/doc ${FAKEROOT}/usr/share/doc/ghostscript-9.21
+
+tar -xvf ../<font-tarball> -C ${FAKEROOT}/usr/share/ghostscript --no-same-owner
+fc-cache -v ${FAKEROOT}/usr/share/ghostscript/fonts/
+
+gs -q -dBATCH /usr/share/ghostscript/9.21/examples/tiger.eps
+
+#################
+} # END OF FILE #
+#################
+

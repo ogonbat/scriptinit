@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.sourceforge.net/sourceforge/asymptote/asymptote-2.41.src.tgz"
+MD5SUMLIST="d16909a9189a3177ad2f8cb8161e32e1"
+REQUIRES="gs texlive"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+export TEXARCH=$(uname -m | sed -e 's/i.86/i386/' -e 's/$/-linux/')
+
+./configure --prefix=/opt/texlive/2016                          \
+            --bindir=/opt/texlive/2016/bin/$TEXARCH             \
+            --datarootdir=/opt/texlive/2016/texmf-dist          \
+            --infodir=/opt/texlive/2016/texmf-dist/doc/info     \
+            --libdir=/opt/texlive/2016/texmf-dist               \
+            --mandir=/opt/texlive/2016/texmf-dist/doc/man       \
+            --enable-gc=system                                  \
+            --with-latex=/opt/texlive/2016/texmf-dist/tex/latex \
+            --with-context=/opt/texlive/2016/texmf-dist/tex/context/third
+
+make
+
+make DESTDIR=${FAKEROOT} install
+rm -fv ${FAKEROOT}/opt/texlive/2016/texmf-dist/doc/info/asymptote.info
+
+#################
+} # END OF FILE #
+#################
+

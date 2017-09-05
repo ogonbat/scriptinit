@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://downloads.lxqt.org/obconf-qt/0.11.0/obconf-qt-0.11.0.tar.xz"
+MD5SUMLIST="12de451f5ab442bf6174ea285f2670e9"
+REQUIRES="gtk+2 hicolor-icon-theme liblxqt openbox"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+mkdir -v build
+cd       build
+
+cmake -DCMAKE_BUILD_TYPE=Release          \
+      -DCMAKE_INSTALL_PREFIX=$LXQT_PREFIX \
+      -DPULL_TRANSLATIONS=no              \
+      ..
+make
+
+make DESTDIR=${FAKEROOT} install
+
+if [ "$LXQT_PREFIX" != ${FAKEROOT}/usr ]; then
+  ln -s $LXQT_PREFIX/share/obconf-qt ${FAKEROOT}/usr/share
+fi
+
+#################
+} # END OF FILE #
+#################
+

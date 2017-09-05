@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://sourceforge.net/projects/mlt/files/mlt-6.4.1.tar.gz"
+MD5SUMLIST="bfa7b4009be616d6f858393a88fbbb32"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr            \
+            --enable-gpl             \
+            --enable-gpl3            \
+            --enable-opengl          \
+            --disable-gtk2           \
+            --qt-libdir=$QT5DIR/lib  \
+            --qt-includedir=$QT5DIR/include
+make
+
+./src/melt/melt <filename>.mp4
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

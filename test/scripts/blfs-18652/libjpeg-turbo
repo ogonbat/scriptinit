@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-1.5.1.tar.gz"
+MD5SUMLIST="55deb139b0cac3c8200b75d485fc13f3"
+REQUIRES="nasm"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr           \
+            --mandir=/usr/share/man \
+            --with-jpeg8            \
+            --disable-static        \
+            --docdir=/usr/share/doc/libjpeg-turbo-1.5.1
+make
+
+rm -f ${FAKEROOT}/usr/lib/libjpeg.so*
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

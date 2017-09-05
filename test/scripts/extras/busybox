@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# This file is part of LFScript. LFScript is released under the MIT license.
+# Copyright (C) 2007-2017 Marcel van den Boer
+
+WGETLIST="https://busybox.net/downloads/busybox-1.26.2.tar.bz2"
+MD5SUMLIST="bb59d25ee2643db20f212eec539429f1"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+make defconfig
+sed 's/# CONFIG_STATIC is not set/CONFIG_STATIC=y/' -i .config
+
+make
+
+cp -v busybox ${FAKEROOT}/bin
+
+#################
+} # END OF FILE #
+#################
+

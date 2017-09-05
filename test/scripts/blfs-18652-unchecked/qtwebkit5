@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://download.qt.io/community_releases/5.8/5.8.0-final/qtwebkit-opensource-src-5.8.0.tar.xz"
+MD5SUMLIST="60a6935aca4a7c553d0ec4646ceed3b4"
+REQUIRES="icu libjpeg-turbo libpng libwebp libxslt qt5 ruby sqlite"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+SAVEPATH=$PATH
+export PATH=$PWD/bin:$PATH
+
+mkdir -p build
+cd       build
+
+qmake ../WebKit.pro
+make
+
+export PATH=$SAVEPATH
+unset SAVEPATH 
+
+make DESTDIR=${FAKEROOT} install
+
+find $QT5DIR/lib/pkgconfig -name "*.pc" -exec perl -pi -e "s, -L$PWD/?\S+,,g" {} \;
+
+find $QT5DIR/ -name qt_lib_bootstrap_private.pri \
+   -exec sed -i -e "s:$PWD/qtbase:/$QT5DIR/lib/:g" {} \;
+
+find $QT5DIR/ -name \*.prl \
+   -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+#################
+} # END OF FILE #
+#################
+

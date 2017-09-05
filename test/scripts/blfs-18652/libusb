@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://github.com//libusb/libusb/releases/download/v1.0.21/libusb-1.0.21.tar.bz2"
+MD5SUMLIST="1da9ea3c27b3858fa85c5f4466003e44"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i "s/^PROJECT_LOGO/#&/" doc/doxygen.cfg.in
+
+./configure --prefix=/usr --disable-static
+make -j1
+
+# (*) Suppress the building of documentation which requires additional software to be installed
+#make -C doc docs
+
+make DESTDIR=${FAKEROOT} install
+
+# (*) Suppress the building of documentation which requires additional software to be installed
+#install -v -d -m755 ${FAKEROOT}/usr/share/doc/libusb-1.0.21/apidocs
+#install -v -m644    doc/html/* \
+#                    ${FAKEROOT}/usr/share/doc/libusb-1.0.21/apidocs
+
+#################
+} # END OF FILE #
+#################
+

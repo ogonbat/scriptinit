@@ -1,0 +1,103 @@
+=====================================================================
+An overview of the features selected (and removed) in the fsos kernel
+=====================================================================
+
+NOTES:
+- Items in the list prefixed with "(def)" were already selected by default,
+  after 'make ARCH=x86_64 defconfig'.
+- Any feature not on this list is configured as in 'make ARCH=i386 defconfig' or
+  'make ARCH=x86_64 defconfig'.
+
+                                                                Required for:
+############################################################### -------------
+        Linux Kernel Configuration                            #
+          General setup                                       #
+            Local version - append to kernel...: "-lfscript4" #
+            Kernel compression mode: "XZ"                     #
+          Processor type and features                         #
+(def) [*]   Symmetric multi-processing support                # x7driver-vmmouse
+(def) [*]   Support for extended (non-PC) x86 platforms       # x7driver-vmmouse
+      [*]   ScaleMP vSMP                           (x64 only) # x7driver-vmmouse
+            Processor family                                  #
+              "486"                                           # 32-bit only
+(def)         "Generic-x86-64"                                # 64-bit only
+(def) [*] Networking support                                  #
+            Networking Options                                #
+(def) [*]     Network packet filtering framework (Netfilter)  # iptables
+      [*]     802.1d Ethernet Bridging                        # qemu
+(def) [*]   Wireless                                          # wpa_supplicant
+(def) [*]     cfg80211 - wireless configuration API           # wpa_supplicant
+      [*]       cfg80211 wireless extensions compatibility    # wpa_supplicant
+(def) [*]     Generic IEEE 802.11 Networking Stack (mac80211) # wpa_supplicant
+          Device Drivers                                      #
+            Generic Driver Options                            #
+      [ ]     Support for uevent helper                       # LFS kernel
+(def) [*]     Maintain a devtmpfs filesystem to mount at /dev # LFS kernel
+(def) [*]   Network device support                            #
+(def) [*]     Network core driver support                     #
+      [*]       Universal TUN/TAP device driver support       # qemu
+(def) [*]     Wireless LAN                                    # wpa_supplicant
+            Input device support                              #
+(def) [*]     Generic input layer (needed for...)             # libevdev
+(def) [*]       Event interface                               # libevdev
+(def) [*]       Mice                                          # x7driver-vmmouse
+(def) [*]         PS/2 mouse                                  # x7driver-vmmouse
+      [*]           Virtual mouse (vmmouse)        (x64 only) # x7driver-vmmouse
+(def) [*]       Miscellaneous devices                         # libevdev
+      [*]         User level driver support                   # libevdev
+            Graphics support                                  #
+(def) [*]     Direct Rendering Manager (XFree86 ... support)  # x7drivers
+      [*]     ATI Radeon                                      # x7driver-ati
+      [*]     Nouveau (NVIDIA) cards                          # x7driver-nouveau
+(def) [*]       Support for backlight control                 # x7driver-nouveau
+(def) [*]     Intel 8xx/9xx/G3x/G4x/HD Graphics               # x7driver-intel
+      [*]     DRM driver for VMware Virtual GPU               # x7driver-vmware
+      [*]       Enable framebuffer console under vmwgfx by... # x7driver-vmware
+      [*]     QXL virtual GPU                                 # QEMU guest
+              Framebuffer devices                             #
+      [*]       VESA VGA graphics support                     #
+(def) [*]   Sound card support                                # alsa-lib
+(def) [*]     Advanced Linux Sound Architecture               # alsa-lib
+(def) [*]       PCI sound devices                             #
+      [*]         Intel/SiS/nVidia/AMD/ALi AC97 Controller    # QEMU sound
+(def) [ ]     Open Sound System (DEPRECATED)                  # alsa-lib
+            HID support                                       #
+(def) [*]     HID bus support                                 # x7driver-wacom
+                Special HID drivers                           #
+      [*]         Wacom Intuos/Graphire tablet support (USB)  # x7driver-wacom
+(def) [*]   USB support                                       # USB / libusb
+(def) [*]     Support for Host-side USB                       # USB / libusb
+      [*]       xHCI HCD (USB 3.0) support                    # USB
+(def) [*]       EHCI HCD (USB 2.0) support                    # USB
+(def) [*]       OHCI HCD (USB 1.1) support                    # USB / cups
+(def) [*]       UHCI HCD (most Intel and VIA) support         # USB / cups
+(def) [*]       USB Printer support                           # cups
+(def) [*]       USB Mass Storage support                      # USB
+          File systems                                        #
+(def) [*]   The Extended 4 (ext4) filesystem                  #
+      [*]   Btrfs filesystem support                          # btrfs-progs
+      [*]   FUSE (Filesystem in Userspace) support            # fuse
+      [*]   Overlay filesystem support                        # Writable Live CD
+            CD-ROM/DVD Filesystems                            #
+(def) [*]     ISO 9660 CDROM file system support              #
+(def) [*]       Microsoft Joliet CDROM extensions             #
+      [*]     UDF file system support                         #
+            DOS/FAT/NT Filesystems                            #
+(def) [*]     MSDOS fs support                                #
+(def) [*]     VFAT (Windows-95) fs support                    #
+(def)           Default codepage for FAT: "437"               #
+(def)           Default iocharset for FAT: "iso8859-1"        #
+      [*]     NTFS file system support                        #
+      [*]       NTFS write support                            #
+(def) [*]   Miscellaneous filesystems                         #
+      [*]     SquashFS 4.0 - Squashed file system support     # BuildISO
+(def) [*]       Include support for ZLIB compressed file...   #
+      [*]       Include support for LZ4 compressed file...    #
+      [*]       Include support for LZO compressed file...    #
+      [*]       Include support for XZ compressed file...     # BuildISO
+(def) [*] Virtualization:                                     # qemu
+      [*]   Kernel-based Virtual Machine (KVM) support        # qemu
+      [*]     KVM for Intel processors support                # qemu
+      [*]     KVM for AMD processors support                  # qemu
+###############################################################
+

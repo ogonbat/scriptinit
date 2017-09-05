@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.sourceforge.net/freetype/freetype-2.7.1.tar.bz2
+          http://downloads.sourceforge.net/freetype/freetype-doc-2.7.1.tar.bz2"
+MD5SUMLIST="b3230110e0cab777e0df7631837ac36e
+            9040384a0263bda972893b0c259a4715"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+tar -xf ../freetype-doc-2.7.1.tar.bz2 --strip-components=2 -C docs
+
+sed -ri "s:.*(AUX_MODULES.*valid):\1:" modules.cfg
+
+sed -r "s:.*(#.*SUBPIXEL_RENDERING) .*:\1:" \
+    -i include/freetype/config/ftoption.h
+
+./configure --prefix=/usr --disable-static
+make
+
+make DESTDIR=${FAKEROOT} install
+install -v -m755 -d ${FAKEROOT}/usr/share/doc/freetype-2.7.1
+cp -v -R docs/*     ${FAKEROOT}/usr/share/doc/freetype-2.7.1
+
+#################
+} # END OF FILE #
+#################
+

@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://www.kernel.org/pub/software/scm/git/git-2.12.2.tar.xz
+          https://www.kernel.org/pub/software/scm/git/git-htmldocs-2.12.2.tar.xz
+          https://www.kernel.org/pub/software/scm/git/git-manpages-2.12.2.tar.xz"
+MD5SUMLIST="ad5ae08664c40caf074392abc301cccd
+            7bdec89e868d3be4225af123c3a4484d
+            9358777e9a67e57427b03884c82311bd"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr --with-gitconfig=/etc/gitconfig
+make NO_INSTALL_HARDLINKS=YesPlease
+
+# (*) Don't build documentation
+#make html
+
+# (*) Don't build documentation
+#make man
+
+make DESTDIR=${FAKEROOT} NO_INSTALL_HARDLINKS=YesPlease install
+
+# (*) Don't build documentation
+#make DESTDIR=${FAKEROOT} install-man
+
+# (*) Don't build documentation
+#make DESTDIR=${FAKEROOT} htmldir=/usr/share/doc/git-2.12.2 install-html
+
+tar -xf ../git-manpages-2.12.2.tar.xz \
+    -C ${FAKEROOT}/usr/share/man --no-same-owner --no-overwrite-dir
+
+mkdir -vp   ${FAKEROOT}/usr/share/doc/git-2.12.2
+tar   -xf   ../git-htmldocs-2.12.2.tar.xz \
+      -C    ${FAKEROOT}/usr/share/doc/git-2.12.2 --no-same-owner --no-overwrite-dir
+
+find        ${FAKEROOT}/usr/share/doc/git-2.12.2 -type d -exec chmod 755 {} \;
+find        ${FAKEROOT}/usr/share/doc/git-2.12.2 -type f -exec chmod 644 {} \;
+
+mkdir -vp ${FAKEROOT}/usr/share/doc/git-2.12.2/man-pages/{html,text}
+mv        ${FAKEROOT}/usr/share/doc/git-2.12.2/{git*.txt,man-pages/text}
+mv        ${FAKEROOT}/usr/share/doc/git-2.12.2/{git*.,index.,man-pages/}html
+
+mkdir -vp ${FAKEROOT}/usr/share/doc/git-2.12.2/technical/{html,text}
+mv        ${FAKEROOT}/usr/share/doc/git-2.12.2/technical/{*.txt,text}
+mv        ${FAKEROOT}/usr/share/doc/git-2.12.2/technical/{*.,}html
+
+mkdir -vp ${FAKEROOT}/usr/share/doc/git-2.12.2/howto/{html,text}
+mv        ${FAKEROOT}/usr/share/doc/git-2.12.2/howto/{*.txt,text}
+mv        ${FAKEROOT}/usr/share/doc/git-2.12.2/howto/{*.,}html
+
+#################
+} # END OF FILE #
+#################
+

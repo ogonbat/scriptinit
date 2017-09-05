@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.sourceforge.net/docbook/docbook-dsssl-1.79.tar.bz2
+          http://downloads.sourceforge.net/docbook/docbook-dsssl-doc-1.79.tar.bz2"
+MD5SUMLIST="bc192d23266b9a664ca0aba4a7794c7c
+            dontverify"
+REQUIRES="openjade opensp sgml-common sgml-dtd sgml-dtd-3"
+POSTINST="now"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+tar -xf ../docbook-dsssl-doc-1.79.tar.bz2 --strip-components=1
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+install -v -m755 bin/collateindex.pl /usr/bin
+install -v -m644 bin/collateindex.pl.1 /usr/share/man/man1
+install -v -d -m755 /usr/share/sgml/docbook/dsssl-stylesheets-1.79
+cp -v -R * /usr/share/sgml/docbook/dsssl-stylesheets-1.79
+
+install-catalog --add /etc/sgml/dsssl-docbook-stylesheets.cat \
+    /usr/share/sgml/docbook/dsssl-stylesheets-1.79/catalog
+
+install-catalog --add /etc/sgml/dsssl-docbook-stylesheets.cat \
+    /usr/share/sgml/docbook/dsssl-stylesheets-1.79/common/catalog
+
+install-catalog --add /etc/sgml/sgml-docbook.cat              \
+    /etc/sgml/dsssl-docbook-stylesheets.cat
+
+#################
+} # END OF FILE #
+#################
+

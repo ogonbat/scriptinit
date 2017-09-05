@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://distfiles.audacious-media-player.org/audacious-3.8.2.tar.bz2"
+MD5SUMLIST="e5172095152678ede37aadd0e82d161f"
+REQUIRES="gtk+2 libxml2 qt5 xorg xorg-env"
+POSTINST="now"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+TPUT=/bin/true ./configure --prefix=/usr \
+                           --with-buildstamp="BLFS"
+make
+
+make DESTDIR=${FAKEROOT} install
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+cp -v /usr/share/applications/audacious{,-qt}.desktop
+
+sed -e '/^Name/ s/$/ Qt/' \
+    -e '/Exec=/ s/audacious/& --qt/' \
+    -i /usr/share/applications/audacious-qt.desktop
+
+#################
+} # END OF FILE #
+#################
+

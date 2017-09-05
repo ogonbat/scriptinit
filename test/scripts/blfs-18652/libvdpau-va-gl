@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://github.com/i-rinat/libvdpau-va-gl/archive/v0.4.0.tar.gz"
+MD5SUMLIST="638244652a702d0262039890904f37ce"
+REQUIRES="cmake ffmpeg glib2 libva libvdpau xorg-env"
+POSTINST="now"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+mkdir build
+cd    build
+
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$XORG_PREFIX ..
+make
+
+make DESTDIR=${FAKEROOT} install
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+echo "export VDPAU_DRIVER=va_gl" >> /etc/profile.d/xorg.sh
+
+#################
+} # END OF FILE #
+#################
+

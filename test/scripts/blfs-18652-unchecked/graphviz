@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://pkgs.fedoraproject.org/repo/pkgs/graphviz/graphviz-2.38.0.tar.gz/5b6a829b2ac94efcd5fa3c223ed6d3ae/graphviz-2.38.0.tar.gz
+          http://www.linuxfromscratch.org/patches/blfs/svn/graphviz-2.38.0-consolidated_fixes-1.patch"
+MD5SUMLIST="5b6a829b2ac94efcd5fa3c223ed6d3ae
+            dontverify"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+patch -Np1 -i ../graphviz-2.38.0-consolidated_fixes-1.patch
+
+sed -i '/LIBPOSTFIX="64"/s/64//' configure.ac
+
+autoreconf
+./configure --prefix=/usr --disable-php
+make
+
+make DESTDIR=${FAKEROOT} install
+
+ln -v -s ${FAKEROOT}/usr/share/graphviz/doc \
+         ${FAKEROOT}/usr/share/doc/graphviz-2.38.0
+
+#################
+} # END OF FILE #
+#################
+

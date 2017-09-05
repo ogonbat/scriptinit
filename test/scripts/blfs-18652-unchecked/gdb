@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://ftp.gnu.org/gnu/gdb/gdb-7.12.1.tar.xz"
+MD5SUMLIST="193453347ddced7acb6b1cd2ee8f2e4b"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr --with-system-readline --without-guile
+make
+
+make -C gdb/doc doxy
+
+pushd gdb/testsuite
+make  site.exp
+echo  "set gdb_test_timeout 120" >> site.exp
+runtest TRANSCRIPT=y
+popd
+
+make DESTDIR=${FAKEROOT} -C gdb install
+
+install -d ${FAKEROOT}/usr/share/doc/gdb-7.12.1
+rm -rf gdb/doc/doxy/xml
+cp -Rv gdb/doc/doxy ${FAKEROOT}/usr/share/doc/gdb-7.12.1
+
+#################
+} # END OF FILE #
+#################
+

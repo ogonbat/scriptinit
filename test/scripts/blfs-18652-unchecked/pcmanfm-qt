@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.lxqt.org/pcmanfm-qt/0.11.2/pcmanfm-qt-0.11.2.tar.xz"
+MD5SUMLIST="e0101bbedf0239d1ae29570b18e28f3a"
+REQUIRES="libfm-qt liblxqt lxmenu-data"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+mkdir -v build
+cd       build
+
+cmake -DCMAKE_BUILD_TYPE=Release          \
+      -DCMAKE_INSTALL_PREFIX=$LXQT_PREFIX \
+      -DPULL_TRANSLATIONS=no              \
+      -DCMAKE_INSTALL_LIBDIR=lib          \
+      ..
+
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

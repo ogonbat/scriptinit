@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.27.tar.bz2"
+MD5SUMLIST="5217ef3e76a7275a2a3b569a12ddc989"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr
+make
+
+make DESTDIR=${FAKEROOT} install
+install -v -m644 -D README ${FAKEROOT}/usr/share/doc/libgpg-error-1.27/README
+
+#################
+} # END OF FILE #
+#################
+

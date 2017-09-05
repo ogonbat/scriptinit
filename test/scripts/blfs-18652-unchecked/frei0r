@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://files.dyne.org/frei0r/releases/frei0r-plugins-1.5.0.tar.gz"
+MD5SUMLIST="afdaa90dc70453c91bb60e0f71e701fd"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+mkdir -vp build
+cd        build
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr    \
+      -DCMAKE_BUILD_TYPE=Release     \
+      -DOpenCV_DIR=/usr/share/OpenCV \
+      -Wno-dev ..
+
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

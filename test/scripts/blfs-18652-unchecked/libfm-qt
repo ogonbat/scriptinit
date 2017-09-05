@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.lxqt.org/libfm-qt/0.11.2/libfm-qt-0.11.2.tar.xz"
+MD5SUMLIST="8737ab91b48566c5ab4c7dd69fd2eb26"
+REQUIRES="cmake libfm qt5"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+mkdir -v build
+cd       build
+
+cmake -DCMAKE_INSTALL_PREFIX=$LXQT_PREFIX \
+      -DCMAKE_BUILD_TYPE=Release          \
+      -DPULL_TRANSLATIONS=no              \
+      -DCMAKE_INSTALL_LIBDIR=lib          \
+      ..
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

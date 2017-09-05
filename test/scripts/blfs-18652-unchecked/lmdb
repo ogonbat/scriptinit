@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://github.com/LMDB/lmdb/archive/LMDB_0.9.19.tar.gz"
+MD5SUMLIST="3fedea4a16676b7585b025349b3201c4"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+cd libraries/liblmdb
+make
+sed -i 's| liblmdb.a||' Makefile
+
+make DESTDIR=${FAKEROOT} prefix=/usr install
+
+#################
+} # END OF FILE #
+#################
+

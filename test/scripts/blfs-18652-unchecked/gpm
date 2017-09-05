@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://www.nico.schottelius.org/software/gpm/archives/gpm-1.20.7.tar.bz2
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="bf84143905a6a903dbd4d4b911a2a2b8
+            b4f1623b69c67f10e67ca610ceee56b4"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i -e 's:<gpm.h>:"headers/gpm.h":' src/prog/{display-buttons,display-coords,get-versions}.c
+./autogen.sh
+./configure --prefix=/usr --sysconfdir=/etc
+make
+
+make DESTDIR=${FAKEROOT} install
+
+install-info --dir-file=/usr/share/info/dir           \
+             ${FAKEROOT}/usr/share/info/gpm.info
+
+ln -sfv libgpm.so.2.1.0 ${FAKEROOT}/usr/lib/libgpm.so
+install -v -m644 conf/gpm-root.conf ${FAKEROOT}/etc
+
+install -v -m755 -d ${FAKEROOT}/usr/share/doc/gpm-1.20.7/support
+install -v -m644    doc/support/*                     \
+                    ${FAKEROOT}/usr/share/doc/gpm-1.20.7/support
+install -v -m644    doc/{FAQ,HACK_GPM,README*}        \
+                    ${FAKEROOT}/usr/share/doc/gpm-1.20.7
+
+includeBootscript gpm
+
+cat > ${FAKEROOT}/etc/sysconfig/mouse << "EOF"
+# Begin /etc/sysconfig/mouse
+
+MDEVICE="<yourdevice>"
+PROTOCOL="<yourprotocol>"
+GPMOPTS="<additional options>"
+
+# End /etc/sysconfig/mouse
+EOF
+
+#################
+} # END OF FILE #
+#################
+

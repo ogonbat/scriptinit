@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/ntp-4.2.8p10.tar.gz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="745384ed0dedb3f66b33fe84d66466f9
+            b4f1623b69c67f10e67ca610ceee56b4"
+TAGS="preinst"
+POSTINST="now"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -e "s/https/http/"              \
+    -e 's/"(\\S+)"/"?([^\\s"]+)"?/' \
+    -i scripts/update-leap/update-leap.in
+
+./configure CFLAGS="-O2 -g -fPIC" \
+            --prefix=/usr         \
+            --bindir=/usr/sbin    \
+            --sysconfdir=/etc     \
+            --enable-linuxcaps    \
+            --with-lineeditlibs=readline \
+            --docdir=/usr/share/doc/ntp-4.2.8p10
+make
+
+make DESTDIR=${FAKEROOT} install
+install -v -o ntp -g ntp -d ${FAKEROOT}/var/lib/ntp
+
+cat > ${FAKEROOT}/etc/ntp.conf << "EOF"
+# Asia
+server 0.asia.pool.ntp.org
+
+# Australia
+server 0.oceania.pool.ntp.org
+
+# Europe
+server 0.europe.pool.ntp.org
+
+# North America
+server 0.north-america.pool.ntp.org
+
+# South America
+server 2.south-america.pool.ntp.org
+
+driftfile /var/lib/ntp/ntp.drift
+pidfile   /var/run/ntpd.pid
+
+leapfile  /etc/ntp.leapseconds
+EOF
+
+cat >> ${FAKEROOT}/etc/ntp.conf << "EOF"
+# Security session
+restrict    default limited kod nomodify notrap nopeer noquery
+restrict -6 default limited kod nomodify notrap nopeer noquery
+
+restrict 127.0.0.1
+restrict ::1
+EOF
+
+includeBootscript ntpd
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+groupadd -g 87 ntp
+useradd -c "Network Time Protocol" -d /var/lib/ntp -u 87 \
+        -g ntp -s /bin/false ntp
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+ln -v -sf ../init.d/setclock /etc/rc.d/rc0.d/K46setclock
+ln -v -sf ../init.d/setclock /etc/rc.d/rc6.d/K46setclock
+
+#################
+} # END OF FILE #
+#################
+

@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://www.dovecot.org/releases/2.2/dovecot-2.2.29.tar.gz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="ff95486a5c43025a2c3f5a712e7962b9
+            b4f1623b69c67f10e67ca610ceee56b4"
+TAGS="preinst"
+POSTINST="now"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr                          \
+            --sysconfdir=/etc                      \
+            --localstatedir=/var                   \
+            --docdir=/usr/share/doc/dovecot-2.2.29 \
+            --disable-static
+make
+
+make DESTDIR=${FAKEROOT} install
+
+sed -i '/^\!include ${FAKEROOT}/ s/^/#/' ${FAKEROOT}/etc/dovecot/dovecot.conf
+chmod -v 1777 ${FAKEROOT}/var/mail
+cat > ${FAKEROOT}/etc/dovecot/local.conf << "EOF"
+protocols = imap
+ssl = no
+# The next line is only needed if you have no IPv6 network interfaces
+listen = *
+mail_location = mbox:~/Mail:INBOX=/var/mail/%u
+userdb {
+  driver = passwd
+}
+passdb {
+  driver = shadow
+}
+EOF
+
+includeBootscript dovecot
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+groupadd -g 42 dovecot
+useradd -c "Dovecot unprivileged user" -d /dev/null -u 42 \
+        -g dovecot -s /bin/false dovecot
+groupadd -g 43 dovenull
+useradd -c "Dovecot login user" -d /dev/null -u 43 \
+        -g dovenull -s /bin/false dovenull
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+cp -rv /usr/share/doc/dovecot-2.2.29/example-config/* /etc/dovecot
+
+#################
+} # END OF FILE #
+#################
+

@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://download.kde.org/stable/applications/16.12.2/src/khelpcenter-16.12.2.tar.xz"
+MD5SUMLIST="15cd0cdb9138ef2bf312a1567e602b53"
+REQUIRES="grantlee kf5-frameworks libxml2 xapian"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+mkdir build
+cd    build
+
+cmake -DCMAKE_INSTALL_PREFIX=$KF5_PREFIX \
+      -DCMAKE_BUILD_TYPE=Release         \
+      -DBUILD_TESTING=OFF                \
+      -Wno-dev ..
+make
+
+make DESTDIR=${FAKEROOT} install
+
+mv -v $KF5_PREFIX/share/kde4/services/khelpcenter.desktop ${FAKEROOT}/usr/share/applications/
+rm -rv $KF5_PREFIX/share/kde4
+
+#################
+} # END OF FILE #
+#################
+

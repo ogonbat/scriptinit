@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.gnome.org/pub/gnome/sources/gtk+/3.22/gtk+-3.22.12.tar.xz"
+MD5SUMLIST="d9018f05f5617c6e1bbfb5b6afce4143"
+REQUIRES="at-spi2-atk gdk-pixbuf libepoxy pango"
+POSTINST="true"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr             \
+            --sysconfdir=/etc         \
+            --enable-broadway-backend \
+            --enable-x11-backend      \
+            --disable-wayland-backend
+make
+
+make DESTDIR=${FAKEROOT} install
+
+# (*) Example configuration
+#mkdir -vp ${FAKEROOT}/etc/skel/.config/gtk-3.0
+#cat > ${FAKEROOT}/etc/skel/.config/gtk-3.0/settings.ini << "EOF"
+#[Settings]
+#gtk-theme-name = Adwaita
+#gtk-icon-theme-name = oxygen
+#gtk-font-name = DejaVu Sans 12
+#gtk-cursor-theme-size = 18
+#gtk-toolbar-style = GTK_TOOLBAR_BOTH_HORIZ
+#gtk-xft-antialias = 1
+#gtk-xft-hinting = 1
+#gtk-xft-hintstyle = hintslight
+#gtk-xft-rgba = rgb
+#gtk-cursor-theme-name = Adwaita
+#EOF
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+gtk-query-immodules-3.0 --update-cache
+
+glib-compile-schemas /usr/share/glib-2.0/schemas
+
+# (*) Update icon cache
+gtk-update-icon-cache
+
+#################
+} # END OF FILE #
+#################
+

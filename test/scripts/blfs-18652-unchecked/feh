@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://feh.finalrewind.org/feh-2.18.3.tar.bz2"
+MD5SUMLIST="f0ad0f1740d8fbd5fb944373ce4d5076"
+REQUIRES="giflib imlib2 libpng"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i "s:doc/feh:&-2.18.3:" config.mk
+make PREFIX=/usr
+
+make DESTDIR=${FAKEROOT} PREFIX=/usr install
+
+#################
+} # END OF FILE #
+#################
+

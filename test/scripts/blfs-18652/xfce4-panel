@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://archive.xfce.org/src/xfce/xfce4-panel/4.12/xfce4-panel-4.12.1.tar.bz2"
+MD5SUMLIST="0b943f2e72a3693dddb1af559826cb62"
+REQUIRES="exo garcon libwnck2 libxfce4ui"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr --sysconfdir=/etc --enable-gtk3
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

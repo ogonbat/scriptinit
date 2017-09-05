@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://www.wireshark.org/download/src/all-versions/wireshark-2.2.6.tar.bz2
+          http://www.linuxfromscratch.org/patches/blfs/svn/wireshark-2.2.6-lua_5_3_1-1.patch"
+MD5SUMLIST="2cd9a35c2df8c32668c1776784f074df
+            dontverify"
+REQUIRES="glib2"
+TAGS="preinst"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+patch -Np1 -i ../wireshark-2.2.6-lua_5_3_1-1.patch
+
+./configure --prefix=/usr --sysconfdir=/etc
+make
+
+make DESTDIR=${FAKEROOT} install
+
+install -v -m755 -d ${FAKEROOT}/usr/share/doc/wireshark-2.2.6
+install -v -m644    README{,.linux} doc/README.* doc/*.{pod,txt} \
+                    ${FAKEROOT}/usr/share/doc/wireshark-2.2.6
+
+pushd ${FAKEROOT}/usr/share/doc/wireshark-2.2.6
+   for FILENAME in ../../wireshark/*.html; do
+      ln -s -v -f $FILENAME .
+   done
+popd
+unset FILENAME
+
+install -v -m644 <Downloaded_Files> \
+                 ${FAKEROOT}/usr/share/doc/wireshark-2.2.6
+
+chown -v root:wireshark ${FAKEROOT}/usr/bin/{tshark,dumpcap}
+chmod -v 6550 ${FAKEROOT}/usr/bin/{tshark,dumpcap}
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+groupadd -g 62 wireshark
+
+# (*) Example configuration
+#usermod -a -G wireshark <username>
+
+#################
+} # END OF FILE #
+#################
+

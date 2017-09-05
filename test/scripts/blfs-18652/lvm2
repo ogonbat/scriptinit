@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="ftp://sources.redhat.com/pub/lvm2/releases/LVM2.2.02.170.tgz"
+MD5SUMLIST="135c2c86e0c63c8c32bdc4cd0335b54f"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+SAVEPATH=$PATH
+PATH=$PATH:/sbin:/usr/sbin
+./configure --prefix=/usr       \
+            --exec-prefix=      \
+            --enable-applib     \
+            --enable-cmdlib     \
+            --enable-pkgconfig  \
+            --enable-udev_sync
+make
+PATH=$SAVEPATH
+unset SAVEPATH
+
+make DESTDIR=${FAKEROOT} -C tools install_dmsetup_dynamic
+make DESTDIR=${FAKEROOT} -C udev  install
+make DESTDIR=${FAKEROOT} -C libdm install
+
+# (*) Example configuration
+#     --with-thin-check=    \
+#     --with-thin-dump=     \
+#     --with-thin-repair=   \
+#     --with-thin-restore=  \
+#     --with-cache-check=   \
+#     --with-cache-dump=    \
+#     --with-cache-repair=  \
+#     --with-cache-restore= \
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

@@ -1,0 +1,115 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://www.x.org/pub/individual/lib/xtrans-1.3.5.tar.bz2
+          https://www.x.org/pub/individual/lib/libX11-1.6.5.tar.bz2
+          https://www.x.org/pub/individual/lib/libXext-1.3.3.tar.bz2
+          https://www.x.org/pub/individual/lib/libFS-1.0.7.tar.bz2
+          https://www.x.org/pub/individual/lib/libICE-1.0.9.tar.bz2
+          https://www.x.org/pub/individual/lib/libSM-1.2.2.tar.bz2
+          https://www.x.org/pub/individual/lib/libXScrnSaver-1.2.2.tar.bz2
+          https://www.x.org/pub/individual/lib/libXt-1.1.5.tar.bz2
+          https://www.x.org/pub/individual/lib/libXmu-1.1.2.tar.bz2
+          https://www.x.org/pub/individual/lib/libXpm-3.5.12.tar.bz2
+          https://www.x.org/pub/individual/lib/libXaw-1.0.13.tar.bz2
+          https://www.x.org/pub/individual/lib/libXfixes-5.0.3.tar.bz2
+          https://www.x.org/pub/individual/lib/libXcomposite-0.4.4.tar.bz2
+          https://www.x.org/pub/individual/lib/libXrender-0.9.10.tar.bz2
+          https://www.x.org/pub/individual/lib/libXcursor-1.1.14.tar.bz2
+          https://www.x.org/pub/individual/lib/libXdamage-1.1.4.tar.bz2
+          https://www.x.org/pub/individual/lib/libfontenc-1.1.3.tar.bz2
+          https://www.x.org/pub/individual/lib/libXfont2-2.0.1.tar.bz2
+          https://www.x.org/pub/individual/lib/libXft-2.3.2.tar.bz2
+          https://www.x.org/pub/individual/lib/libXi-1.7.9.tar.bz2
+          https://www.x.org/pub/individual/lib/libXinerama-1.1.3.tar.bz2
+          https://www.x.org/pub/individual/lib/libXrandr-1.5.1.tar.bz2
+          https://www.x.org/pub/individual/lib/libXres-1.0.7.tar.bz2
+          https://www.x.org/pub/individual/lib/libXtst-1.2.3.tar.bz2
+          https://www.x.org/pub/individual/lib/libXv-1.0.11.tar.bz2
+          https://www.x.org/pub/individual/lib/libXvMC-1.0.10.tar.bz2
+          https://www.x.org/pub/individual/lib/libXxf86dga-1.1.4.tar.bz2
+          https://www.x.org/pub/individual/lib/libXxf86vm-1.1.4.tar.bz2
+          https://www.x.org/pub/individual/lib/libdmx-1.1.3.tar.bz2
+          https://www.x.org/pub/individual/lib/libpciaccess-0.13.5.tar.bz2
+          https://www.x.org/pub/individual/lib/libxkbfile-1.0.9.tar.bz2
+          https://www.x.org/pub/individual/lib/libxshmfence-1.2.tar.bz2"
+MD5SUMLIST="c5ba432dd1514d858053ffe9f4737dd8
+            0f618db70c4054ca67cee0cc156a4255
+            52df7c4c1f0badd9f82ab124fb32eb97
+            d79d9fe2aa55eb0f69b1a4351e1368f7
+            addfb1e897ca8079531669c7c7711726
+            499a7773c65aba513609fe651853c5f3
+            7a773b16165e39e938650bcc9027c1d5
+            8f5b5576fbabba29a05f3ca2226f74d3
+            41d92ab627dfa06568076043f3e089e4
+            20f4627672edb2bd06a749f11aa97302
+            e5e06eb14a608b58746bdd1c0bd7b8e3
+            07e01e046a0215574f36a3aacb148be0
+            f7a218dcbf6f0848599c6c36fc65c51a
+            802179a76bded0b658f4e9ec5e1830a4
+            1e7c17afbbce83e2215917047c57d1b3
+            0cf292de2a9fa2e9a939aefde68fd34f
+            0920924c3a9ebc1265517bdd2f9fde50
+            0d9f6dd9c23bf4bcbfb00504b566baf5
+            331b3a2a3a1a78b5b44cfbd43f86fcfe
+            1f0f2719c020655a60aee334ddd26d67
+            9336dc46ae3bf5f81c247f7131461efd
+            28e486f1d491b757173dd85ba34ee884
+            45ef29206a6b58254c81bea28ec6c95f
+            ef8c2c1d16a00bd95b9fdcef63b8a2ca
+            210b6ef30dda2256d54763136faa37b9
+            4cbe1c1def7a5e1b0ed5fce8e512f4c6
+            d7dd9b9df336b7dd4028b6b56542ff2c
+            298b8fff82df17304dfdb5fe4066fe3a
+            ba983eba5a9f05d152a0725b8e863151
+            d810ab17e24c1418dedf7207fb2841d4
+            4a4cfeaf24dab1b991903455d6d7d404
+            66662e76899112c0f99e22f2fc775a7e"
+REQUIRES="fontconfig libxcb xorg-env"
+TAGS="multi"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+# (*) Only run this after tests
+#grep -A9 summary *make_check.log
+
+case $(basename "$PWD") in
+  libICE* )
+    ./configure $XORG_CONFIG ICE_LIBS=-lpthread
+  ;;
+
+  libXfont2-[0-9]* )
+    ./configure $XORG_CONFIG --disable-devel-docs
+  ;;
+
+  libXt-[0-9]* )
+    ./configure $XORG_CONFIG \
+                --with-appdefaultdir=/etc/X11/app-defaults
+  ;;
+
+  * )
+    ./configure $XORG_CONFIG
+  ;;
+esac
+make
+#make check 2>&1 | tee ../$(basename "$PWD")-make_check.log
+
+make DESTDIR=${FAKEROOT} install
+
+if [ "$XORG_PREFIX" != "/usr" ]; then
+    ln -sv $XORG_PREFIX/lib/X11 ${FAKEROOT}/usr/lib/X11
+    ln -sv $XORG_PREFIX/include/X11 ${FAKEROOT}/usr/include/X11
+fi
+
+#################
+} # END OF FILE #
+#################
+

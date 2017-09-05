@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.gnu.org/pub/gnu/clisp/latest/clisp-2.49.tar.bz2"
+MD5SUMLIST="1962b99d5e530390ec3829236d168649"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i -e '/socket/d' -e '/"streams"/d' tests/tests.lisp
+
+mkdir build
+cd    build
+
+../configure --srcdir=../                       \
+             --prefix=/usr                      \
+             --docdir=/usr/share/doc/clisp-2.49 \
+             --with-libsigsegv-prefix=/usr
+
+ulimit -s 16384
+make -j1
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

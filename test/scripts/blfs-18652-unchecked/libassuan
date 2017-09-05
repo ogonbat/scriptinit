@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="ftp://ftp.gnupg.org/gcrypt/libassuan/libassuan-2.4.3.tar.bz2"
+MD5SUMLIST="8e01a7c72d3e5d154481230668e6eb5a"
+REQUIRES="libgpg-error"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr
+make
+
+make -C doc pdf ps
+
+make DESTDIR=${FAKEROOT} install
+
+install -v -dm755 ${FAKEROOT}/usr/share/doc/libassuan-2.4.3
+install -v -m644  doc/assuan.{pdf,ps,dvi} \
+                  ${FAKEROOT}/usr/share/doc/libassuan-2.4.3
+
+#################
+} # END OF FILE #
+#################
+

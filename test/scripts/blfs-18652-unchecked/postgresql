@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.postgresql.org/pub/source/v9.6.2/postgresql-9.6.2.tar.bz2
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="ee9cd5dfa24f691275cc65c92b6ff8f7
+            b4f1623b69c67f10e67ca610ceee56b4"
+TAGS="preinst"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
+./configure --prefix=/usr          \
+            --enable-thread-safety \
+            --docdir=/usr/share/doc/postgresql-9.6.2
+make
+
+make DESTDIR=${FAKEROOT} install
+make DESTDIR=${FAKEROOT} install-docs
+
+make -C contrib/<SUBDIR-NAME> install
+
+su - postgres -c '/usr/bin/initdb -D ${FAKEROOT}/srv/pgsql/data'
+
+su - postgres -c '/usr/bin/postgres -D ${FAKEROOT}/srv/pgsql/data > \
+                  ${FAKEROOT}/srv/pgsql/data/logfile 2>&1 &'
+
+su - postgres -c '/usr/bin/createdb test'
+echo "create table t1 ( name varchar(20), state_province varchar(20) );" \
+    | (su - postgres -c '/usr/bin/psql test ')
+echo "insert into t1 values ('Billy', 'NewYork');" \
+    | (su - postgres -c '/usr/bin/psql test ')
+echo "insert into t1 values ('Evanidus', 'Quebec');" \
+    | (su - postgres -c '/usr/bin/psql test ')
+echo "insert into t1 values ('Jesse', 'Ontario');" \
+    | (su - postgres -c '/usr/bin/psql test ')
+echo "select * from t1;" | (su - postgres -c '/usr/bin/psql test')
+
+su - postgres -c "/usr/bin/pg_ctl stop -D ${FAKEROOT}/srv/pgsql/data"
+
+includeBootscript postgresql
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+install -v -dm700 /srv/pgsql/data
+install -v -dm755 /run/postgresql
+
+groupadd -g 41 postgres
+useradd -c "PostgreSQL Server" -g postgres -d /srv/pgsql/data \
+        -u 41 postgres
+
+chown -Rv postgres:postgres /srv/pgsql /run/postgresql
+
+#################
+} # END OF FILE #
+#################
+

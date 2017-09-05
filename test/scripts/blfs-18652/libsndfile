@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28.tar.gz"
+MD5SUMLIST="646b5f98ce89ac60cdb060fcd398247c"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/libsndfile-1.0.28
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

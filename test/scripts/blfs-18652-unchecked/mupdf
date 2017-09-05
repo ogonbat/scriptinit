@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://www.mupdf.com/downloads/archive/mupdf-1.11-source.tar.gz
+          http://www.linuxfromscratch.org/patches/blfs/svn/mupdf-1.11-openjpeg-1.patch
+          http://www.linuxfromscratch.org/patches/blfs/svn/mupdf-1.11-shared_libs-1.patch"
+MD5SUMLIST="ab9a6629f572225e803c4cf426bdb09c
+            dontverify
+            dontverify"
+REQUIRES="x7lib xorg"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+rm -rf thirdparty/curl
+rm -rf thirdparty/freetype
+rm -rf thirdparty/harfbuzz
+rm -rf thirdparty/jpeg
+rm -rf thirdparty/libjpeg
+rm -rf thirdparty/openjpeg
+rm -rf thirdparty/zlib
+
+patch -Np1 -i ../mupdf-1.11-openjpeg-1.patch
+patch -Np1 -i ../mupdf-1.11-shared_libs-1.patch
+
+make build=release
+
+make DESTDIR=${FAKEROOT} prefix=/usr                      \
+     build=release                    \
+     docdir=/usr/share/doc/mupdf-1.11 \
+     install
+
+ln -sfv mupdf-x11-curl ${FAKEROOT}/usr/bin/mupdf
+
+#################
+} # END OF FILE #
+#################
+

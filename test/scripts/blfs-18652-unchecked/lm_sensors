@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://pkgs.fedoraproject.org/repo/pkgs/lm_sensors/lm_sensors-3.4.0.tar.bz2/c03675ae9d43d60322110c679416901a/lm_sensors-3.4.0.tar.bz2"
+MD5SUMLIST="c03675ae9d43d60322110c679416901a"
+REQUIRES="which"
+POSTINST="now"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+make PREFIX=/usr        \
+     BUILD_STATIC_LIB=0 \
+     MANDIR=/usr/share/man
+
+make DESTDIR=${FAKEROOT} PREFIX=/usr        \
+     BUILD_STATIC_LIB=0 \
+     MANDIR=/usr/share/man install
+
+install -v -m755 -d ${FAKEROOT}/usr/share/doc/lm_sensors-3.4.0
+cp -rv              README INSTALL doc/* \
+                    ${FAKEROOT}/usr/share/doc/lm_sensors-3.4.0
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+sensors-detect
+
+#################
+} # END OF FILE #
+#################
+

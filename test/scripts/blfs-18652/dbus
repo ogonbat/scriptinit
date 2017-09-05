@@ -1,0 +1,101 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://dbus.freedesktop.org/releases/dbus/dbus-1.10.18.tar.gz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="1209c455598165a0c5263d4201894179
+            b4f1623b69c67f10e67ca610ceee56b4"
+POSTINST="later"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+# (*) User and group were already created in LFS
+#groupadd -g 18 messagebus
+#useradd -c "D-Bus Message Daemon User" -d /var/run/dbus \
+#        -u 18 -g messagebus -s /bin/false messagebus
+
+./configure --prefix=/usr                        \
+            --sysconfdir=/etc                    \
+            --localstatedir=/var                 \
+            --disable-doxygen-docs               \
+            --disable-xml-docs                   \
+            --disable-static                     \
+            --docdir=/usr/share/doc/dbus-1.10.18 \
+            --with-console-auth-dir=/run/console \
+            --with-system-pid-file=/run/dbus/pid \
+            --with-system-socket=/run/dbus/system_bus_socket
+make
+
+make DESTDIR=${FAKEROOT} install
+
+chown -v root:messagebus ${FAKEROOT}/usr/libexec/dbus-daemon-launch-helper
+chmod -v      4750       ${FAKEROOT}/usr/libexec/dbus-daemon-launch-helper
+
+# (*) Don't run test suites.
+#make distclean
+#./configure --enable-tests         \
+#            --enable-asserts       \
+#            --disable-doxygen-docs \
+#            --disable-xml-docs
+#make
+#make check
+
+cat > ${FAKEROOT}/etc/dbus-1/session-local.conf << "EOF"
+<!DOCTYPE busconfig PUBLIC
+ "-//freedesktop//DTD D-BUS Bus Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
+<busconfig>
+
+  <!-- Search for .service files in /usr/local -->
+  <servicedir>/usr/local/share/dbus-1/services</servicedir>
+
+</busconfig>
+EOF
+
+includeBootscript dbus
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+dbus-uuidgen --ensure
+
+# (*) Example configuration
+## Start the D-Bus session daemon
+#eval `dbus-launch`
+#export DBUS_SESSION_BUS_ADDRESS
+
+# (*) Example configuration
+## Kill the D-Bus session daemon
+#kill $DBUS_SESSION_BUS_PID
+
+# (*) Custom profile script; Install it in post-installation so that
+#     'dbus-launch' is not executed in the chroot environment when reloading
+#     the system profile.
+cat > /etc/profile.d/dbus.sh << "EOF"
+# (*) Start the D-Bus session daemon, unless one is already running
+if [ -r ~/.dbus_session ]; then
+    . ~/.dbus_session
+fi
+
+if [ ! -n "${DBUS_SESSION_BUS_PID}" ] ||
+   [ ! kill -0 "${DBUS_SESSION_BUS_PID}" 2> /dev/null ]; then
+    dbus-launch > ~/.dbus_session
+    . ~/.dbus_session
+fi
+
+export DBUS_SESSION_BUS_ADDRESS
+EOF
+
+#################
+} # END OF FILE #
+#################
+

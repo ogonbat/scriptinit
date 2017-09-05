@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+REQUIRES="libXau libXdmcp libxcb mesa twm util-macros x7app x7driver x7font x7legacy x7lib x7proto xbitmaps xcb-proto xcb-util xcb-util-cursor xcb-util-image xcb-util-keysyms xcb-util-renderutil xcb-util-wm xclock xcursor-themes xinit xkeyboard-config xorg-server xterm"
+TAGS="group"
+

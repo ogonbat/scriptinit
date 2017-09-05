@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://download.kde.org/stable/frameworks/5.31/kwayland-5.31.0.tar.xz"
+MD5SUMLIST="3ba021780eb40fadd3472630be680571"
+REQUIRES="extra-cmake-modules mesa qt5 wayland"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+mkdir -v build
+cd       build
+
+cmake -DCMAKE_INSTALL_PREFIX=$LXQT_PREFIX                          \
+      -DCMAKE_BUILD_TYPE=Release                                   \
+      -DCMAKE_INSTALL_LIBDIR=lib                                   \
+      -DBUILD_TESTING=OFF                                          \
+      -DECM_MKSPECS_INSTALL_DIR=$LXQT_PREFIX/share/mkspecs/modules \
+      -Wno-dev ..
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

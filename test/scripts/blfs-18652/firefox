@@ -1,0 +1,141 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/53.0/source/firefox-53.0.source.tar.xz
+          http://www.linuxfromscratch.org/patches/blfs/svn/firefox-53.0-system_graphite2_harfbuzz-1.patch"
+MD5SUMLIST="73175f850d4ff6068c6af674df20477c
+            eb792fa8d02f293389488fa63ece1668"
+REQUIRES="alsa-lib autoconf213 cargo gtk+2 gtk+3 icu libevent libvpx nss pulseaudio sqlite unzip yasm zip"
+POSTINST="now"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+cat > mozconfig << "EOF"
+# If you have a multicore machine, all cores will be used by default.
+# If desired, you can reduce the number of cores used, e.g. to 1, by
+# uncommenting the next line and setting a valid number of CPU cores.
+#mk_add_options MOZ_MAKE_FLAGS="-j1"
+
+# If you have installed dbus-glib, comment out this line:
+ac_add_options --disable-dbus
+
+# If you have installed dbus-glib, and you have installed (or will install)
+# wireless-tools, and you wish to use geolocation web services, comment out
+# this line
+ac_add_options --disable-necko-wifi
+
+# Uncomment this option if you wish to build with gtk+-2
+#ac_add_options --enable-default-toolkit=cairo-gtk2
+
+# Uncomment these lines if you have installed optional dependencies:
+#ac_add_options --enable-system-hunspell
+#ac_add_options --enable-startup-notification
+
+# Uncomment the following option if you have not installed PulseAudio
+#ac_add_options --disable-pulseaudio
+# and uncomment this if you installed alsa-lib instead of PulseAudio
+#ac_add_options --enable-alsa
+
+# If you have installed GConf, comment out this line
+ac_add_options --disable-gconf
+
+# Comment out following options if you have not installed
+# recommended dependencies:
+ac_add_options --enable-system-sqlite
+ac_add_options --with-system-libevent
+ac_add_options --with-system-libvpx
+ac_add_options --with-system-nspr
+ac_add_options --with-system-nss
+ac_add_options --with-system-icu
+
+# If you are going to apply the patch for system graphite
+# and system harfbuzz, uncomment these lines:
+#ac_add_options --with-system-graphite2
+#ac_add_options --with-system-harfbuzz
+
+# Stripping is now enabled by default.
+# Uncomment these lines if you need to run a debugger:
+#ac_add_options --disable-strip
+#ac_add_options --disable-install-strip
+
+# The BLFS editors recommend not changing anything below this line:
+ac_add_options --prefix=/usr
+ac_add_options --enable-application=browser
+
+ac_add_options --disable-crashreporter
+ac_add_options --disable-updater
+ac_add_options --disable-tests
+
+ac_add_options --enable-optimize
+
+ac_add_options --enable-gio
+ac_add_options --enable-official-branding
+ac_add_options --enable-safe-browsing
+ac_add_options --enable-url-classifier
+
+# From firefox-40, using system cairo causes firefox to crash
+# frequently when it is doing background rendering in a tab.
+#ac_add_options --enable-system-cairo
+ac_add_options --enable-system-ffi
+ac_add_options --enable-system-pixman
+
+ac_add_options --with-pthreads
+
+ac_add_options --with-system-bz2
+ac_add_options --with-system-jpeg
+ac_add_options --with-system-png
+ac_add_options --with-system-zlib
+
+mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/firefox-build-dir
+EOF
+
+patch -Np1 -i ../firefox-53.0-system_graphite2_harfbuzz-1.patch
+
+sed -e s/_EVENT_SIZEOF/EVENT__SIZEOF/ \
+    -i ipc/chromium/src/base/message_pump_libevent.cc
+
+SHELL=/bin/sh make -f client.mk
+
+SHELL=/bin/sh make DESTDIR=${FAKEROOT} -f client.mk install INSTALL_SDK=
+chown -R 0:0 ${FAKEROOT}/usr/lib/firefox-53.0
+
+mkdir -pv    ${FAKEROOT}/usr/lib/mozilla/plugins
+ln    -sfv   ../../mozilla/plugins ${FAKEROOT}/usr/lib/firefox-53.0/browser
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+mkdir -pv /usr/share/applications
+mkdir -pv /usr/share/pixmaps
+
+cat > /usr/share/applications/firefox.desktop << "EOF"
+[Desktop Entry]
+Encoding=UTF-8
+Name=Firefox Web Browser
+Comment=Browse the World Wide Web
+GenericName=Web Browser
+Exec=firefox %u
+Terminal=false
+Type=Application
+Icon=firefox
+Categories=GNOME;GTK;Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml+xml;application/vnd.mozilla.xul+xml;text/mml;x-scheme-handler/http;x-scheme-handler/https;
+StartupNotify=true
+EOF
+
+ln -sfv /usr/lib/firefox-53.0/browser/icons/mozicon128.png \
+        /usr/share/pixmaps/firefox.png
+
+#################
+} # END OF FILE #
+#################
+

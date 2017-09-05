@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://security.appspot.com/downloads/vsftpd-3.0.3.tar.gz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="da119d084bd3f98664636ea05b5bb398
+            b4f1623b69c67f10e67ca610ceee56b4"
+TAGS="preinst"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+make
+
+install -v -m 755 vsftpd        ${FAKEROOT}/usr/sbin/vsftpd
+install -v -m 644 vsftpd.8      ${FAKEROOT}/usr/share/man/man8
+install -v -m 644 vsftpd.conf.5 ${FAKEROOT}/usr/share/man/man5
+install -v -m 644 vsftpd.conf   ${FAKEROOT}/etc
+
+cat >> ${FAKEROOT}/etc/vsftpd.conf << "EOF"
+background=YES
+listen=YES
+nopriv_user=vsftpd
+secure_chroot_dir=/usr/share/vsftpd/empty
+EOF
+
+cat >> ${FAKEROOT}/etc/vsftpd.conf << "EOF"
+local_enable=YES
+EOF
+
+cat > ${FAKEROOT}/etc/pam.d/vsftpd << "EOF"
+# Begin /etc/pam.d/vsftpd
+auth       required     /lib/security/pam_listfile.so item=user sense=deny \
+                                                      file=/etc/ftpusers \
+                                                      onerr=succeed
+auth       required     pam_shells.so
+auth       include      system-auth
+account    include      system-account
+session    include      system-session
+EOF
+
+cat >> ${FAKEROOT}/etc/vsftpd.conf << "EOF"
+session_support=YES
+pam_service_name=vsftpd
+EOF
+
+includeBootscript vsftpd
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+install -v -d -m 0755 /usr/share/vsftpd/empty
+install -v -d -m 0755 /home/ftp
+groupadd -g 47 vsftpd
+groupadd -g 45 ftp
+
+useradd -c "vsftpd User"  -d /dev/null -g vsftpd -s /bin/false -u 47 vsftpd
+useradd -c anonymous_user -d /home/ftp -g ftp    -s /bin/false -u 45 ftp
+
+#################
+} # END OF FILE #
+#################
+

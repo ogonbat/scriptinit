@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.gnome.org/pub/gnome/sources/vte/0.46/vte-0.46.1.tar.xz"
+MD5SUMLIST="e8f4393b9f1ec2e2f3cdb3fd4f5a16de"
+REQUIRES="gnutls gtk+3 libxml2 pcre2 vala"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i '/Werror/d' configure.ac
+autoreconf
+
+./configure --prefix=/usr          \
+            --sysconfdir=/etc      \
+            --disable-static       \
+            --enable-introspection
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################
+} # END OF FILE #
+#################
+

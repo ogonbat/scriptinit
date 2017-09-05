@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://www.docbook.org/sgml/4.5/docbook-4.5.zip"
+MD5SUMLIST="07c581f4bbcba6d3aac85360a19f95f7"
+REQUIRES="sgml-common unzip"
+POSTINST="now"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i -e '/ISO 8879/d' \
+       -e '/gml/d' docbook.cat
+
+cat >> ${FAKEROOT}/usr/share/sgml/docbook/sgml-dtd-4.5/catalog << "EOF"
+  -- Begin Single Major Version catalog changes --
+
+PUBLIC "-//OASIS//DTD DocBook V4.4//EN" "docbook.dtd"
+PUBLIC "-//OASIS//DTD DocBook V4.3//EN" "docbook.dtd"
+PUBLIC "-//OASIS//DTD DocBook V4.2//EN" "docbook.dtd"
+PUBLIC "-//OASIS//DTD DocBook V4.1//EN" "docbook.dtd"
+PUBLIC "-//OASIS//DTD DocBook V4.0//EN" "docbook.dtd"
+
+  -- End Single Major Version catalog changes --
+EOF
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+install -v -d /usr/share/sgml/docbook/sgml-dtd-4.5
+chown -R root:root .
+
+install -v docbook.cat /usr/share/sgml/docbook/sgml-dtd-4.5/catalog
+cp -v -af *.dtd *.mod *.dcl /usr/share/sgml/docbook/sgml-dtd-4.5
+
+install-catalog --add /etc/sgml/sgml-docbook-dtd-4.5.cat \
+    /usr/share/sgml/docbook/sgml-dtd-4.5/catalog
+
+install-catalog --add /etc/sgml/sgml-docbook-dtd-4.5.cat \
+    /etc/sgml/sgml-docbook.cat
+
+#################
+} # END OF FILE #
+#################
+

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://github.com/thom311/libnl/releases/download/libnl3_2_29/libnl-3.2.29.tar.gz
+          https://github.com/thom311/libnl/releases/download/libnl3_2_29/libnl-doc-3.2.29.tar.gz"
+MD5SUMLIST="a8ba62a5c4f883f4e493a46d1f3733fe
+            92e97d8f5e810dbae937a42dd13c9731"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr     \
+            --sysconfdir=/etc \
+            --disable-static
+make
+
+make DESTDIR=${FAKEROOT} install
+
+mkdir -vp ${FAKEROOT}/usr/share/doc/libnl-3.2.29
+tar -xf ../libnl-doc-3.2.29.tar.gz --strip-components=1 --no-same-owner \
+    -C  ${FAKEROOT}/usr/share/doc/libnl-3.2.29
+
+#################
+} # END OF FILE #
+#################
+

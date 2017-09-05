@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://download.gimp.org/pub/gegl/0.3/gegl-0.3.14.tar.bz2"
+MD5SUMLIST="0c4fbdc68d9bcebb21898379a438b862"
+REQUIRES="babl json-glib"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr
+LC_ALL=en_US make
+
+make DESTDIR=${FAKEROOT} install
+install -v -m644 docs/*.{css,html} ${FAKEROOT}/usr/share/gtk-doc/html/gegl
+install -d -v -m755 ${FAKEROOT}/usr/share/gtk-doc/html/gegl/images
+install -v -m644 docs/images/*.{png,ico,svg} ${FAKEROOT}/usr/share/gtk-doc/html/gegl/images
+
+#################
+} # END OF FILE #
+#################
+

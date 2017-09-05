@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://llvm.org/releases/4.0.0/llvm-4.0.0.src.tar.xz
+          http://llvm.org/releases/4.0.0/cfe-4.0.0.src.tar.xz
+          http://llvm.org/releases/4.0.0/compiler-rt-4.0.0.src.tar.xz"
+MD5SUMLIST="ea9139a604be702454f6acf160b4f3a2
+            756e17349fdc708c62974b883bf72d37
+            2ec11fb7df827b086341131c5d7f1814"
+REQUIRES="cmake libffi python2"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+tar -xf ../cfe-4.0.0.src.tar.xz -C tools
+tar -xf ../compiler-rt-4.0.0.src.tar.xz -C projects
+
+mv tools/cfe-4.0.0.src tools/clang
+mv projects/compiler-rt-4.0.0.src projects/compiler-rt
+
+mkdir -v build
+cd       build
+
+CC=gcc CXX=g++                              \
+cmake -DCMAKE_INSTALL_PREFIX=/usr           \
+      -DLLVM_ENABLE_FFI=ON                  \
+      -DCMAKE_BUILD_TYPE=Release            \
+      -DLLVM_BUILD_LLVM_DYLIB=ON            \
+      -DLLVM_TARGETS_TO_BUILD="host;AMDGPU" \
+      -Wno-dev ..
+make
+
+# (*) Suppress the building of documentation which requires additional software to be installed
+#cmake -DLLVM_ENABLE_SPHINX=ON         \
+#      -DSPHINX_WARNINGS_AS_ERRORS=OFF \
+#      -Wno-dev ..
+#make docs-llvm-html  docs-llvm-man
+
+# (*) Suppress the building of documentation which requires additional software to be installed
+#make docs-clang-html docs-clang-man
+
+make DESTDIR=${FAKEROOT} install
+
+# (*) Suppress the building of documentation which requires additional software to be installed
+#install -v -m644 docs/man/* ${FAKEROOT}/usr/share/man/man1
+#install -v -d -m755 ${FAKEROOT}/usr/share/doc/llvm-4.0.0/llvm-html
+#cp -Rv docs/html/* ${FAKEROOT}/usr/share/doc/llvm-4.0.0/llvm-html
+
+# (*) Suppress the building of documentation which requires additional software to be installed
+#install -v -m644 tools/clang/docs/man/* ${FAKEROOT}/usr/share/man/man1
+#install -v -d -m755 ${FAKEROOT}/usr/share/doc/llvm-4.0.0/clang-html
+#cp -Rv tools/clang/docs/html/* ${FAKEROOT}/usr/share/doc/llvm-4.0.0/clang-html
+
+#################
+} # END OF FILE #
+#################
+

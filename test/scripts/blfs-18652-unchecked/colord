@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://www.freedesktop.org/software/colord/releases/colord-1.2.12.tar.xz"
+MD5SUMLIST="80b106ba18a43c7eeaf2d9a2b8c5725b"
+REQUIRES="dbus glib2 lcms2 sqlite valgrind"
+TAGS="preinst"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+./configure --prefix=/usr                \
+            --sysconfdir=/etc            \
+            --localstatedir=/var         \
+            --with-daemon-user=colord    \
+            --enable-vala                \
+            --enable-systemd-login=no    \
+            --disable-argyllcms-sensor   \
+            --disable-bash-completion    \
+            --disable-static             \
+            --with-systemdsystemunitdir=no
+make
+
+make DESTDIR=${FAKEROOT} install
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+groupadd -g 71 colord
+useradd -c "Color Daemon Owner" -d /var/lib/colord -u 71 \
+        -g colord -s /bin/false colord
+
+#################
+} # END OF FILE #
+#################
+

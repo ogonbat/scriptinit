@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://curl.haxx.se/download/curl-7.54.0.tar.lzma
+          http://www.linuxfromscratch.org/patches/blfs/svn/curl-7.54.0-valgrind_filter-1.patch"
+MD5SUMLIST="3cf2de0ca4ac43e59067eb6b4f876982
+            0c9b64a14303e9542f7a7346d12194b5"
+REQUIRES="openssl"
+RECOMMENDS="cacerts"
+
+# (*) Install 'cacerts' because it is a runtime dependency for HTTPS
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+patch -Np1 -i ../curl-7.54.0-valgrind_filter-1.patch
+
+./configure --prefix=/usr                           \
+            --disable-static                        \
+            --enable-threaded-resolver              \
+            --with-ca-path=/etc/ssl/certs
+make
+
+# (*) Don't run test suites
+#ln -sfv ld-2.23.so.dbg /lib/ld-linux-x86-64.so.2
+
+make DESTDIR=${FAKEROOT} install
+
+rm -rf docs/examples/.deps
+
+find docs \( -name Makefile\* \
+          -o -name \*.1       \
+          -o -name \*.3 \)    \
+          -exec rm {} \;
+install -v -d -m755 ${FAKEROOT}/usr/share/doc/curl-7.54.0
+cp -v -R docs/*     ${FAKEROOT}/usr/share/doc/curl-7.54.0
+
+#################
+} # END OF FILE #
+#################
+

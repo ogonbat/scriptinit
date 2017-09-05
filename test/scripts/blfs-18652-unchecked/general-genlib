@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+REQUIRES="apr apr-util aspell boost clucene dbus-glib enchant exempi glib2 glibmm gmime gobject-introspection grantlee gsl icu js38 json-c json-glib keyutils libarchive libassuan libatasmart libatomic_ops libcroco libdaemon libesmtp libffi libgcrypt libgpg-error libgsf libgudev libgusb libical libidn libiodbc libksba liblinear libmbim libpaper libqmi libsigc++ libsigsegv libstatgrab libtasn1 libunique libunistring libusb libusb-compat libxkbcommon libxml2 libxslt lzo mtdev nodejs npth nspr openobex pcre pcre2 popt pth ptlib qca talloc wayland wayland-protocols wv xapian yaml"
+TAGS="group"
+

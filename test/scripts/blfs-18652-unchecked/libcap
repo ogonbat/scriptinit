@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.25.tar.xz"
+MD5SUMLIST="6666b839e5d46c2ad33fc8aa2ceb5f77"
+REQUIRES="linux-pam"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+make -C pam_cap
+
+install -v -m755 pam_cap/pam_cap.so ${FAKEROOT}/lib/security
+install -v -m644 pam_cap/capability.conf ${FAKEROOT}/etc/security
+
+#################
+} # END OF FILE #
+#################
+

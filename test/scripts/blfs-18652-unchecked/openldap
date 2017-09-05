@@ -1,0 +1,100 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/openldap-2.4.44.tgz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz
+          http://www.linuxfromscratch.org/patches/blfs/svn/openldap-2.4.44-consolidated-2.patch"
+MD5SUMLIST="693ac26de86231f8dcae2b4e9d768e51
+            b4f1623b69c67f10e67ca610ceee56b4
+            dontverify"
+TAGS="preinst"
+POSTINST="now"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+patch -Np1 -i ../openldap-2.4.44-consolidated-2.patch
+autoconf
+
+./configure --prefix=/usr     \
+            --sysconfdir=/etc \
+            --disable-static  \
+            --enable-dynamic  \
+            --disable-debug   \
+            --disable-slapd
+
+make depend
+make
+
+make DESTDIR=${FAKEROOT} install
+
+patch -Np1 -i ../openldap-2.4.44-consolidated-2.patch
+autoconf
+
+./configure --prefix=/usr         \
+            --sysconfdir=/etc     \
+            --localstatedir=/var  \
+            --libexecdir=/usr/lib \
+            --disable-static      \
+            --disable-debug       \
+            --with-tls=openssl    \
+            --with-cyrus-sasl     \
+            --enable-dynamic      \
+            --enable-crypt        \
+            --enable-spasswd      \
+            --enable-slapd        \
+            --enable-modules      \
+            --enable-rlookups     \
+            --enable-backends=mod \
+            --disable-ndb         \
+            --disable-sql         \
+            --disable-shell       \
+            --disable-bdb         \
+            --disable-hdb         \
+            --enable-overlays=mod
+
+make depend
+make
+
+make DESTDIR=${FAKEROOT} install
+
+install -v -dm700 -o ldap -g ldap ${FAKEROOT}/var/lib/openldap
+
+install -v -dm700 -o ldap -g ldap ${FAKEROOT}/etc/openldap/slapd.d
+chmod   -v    640     ${FAKEROOT}/etc/openldap/slapd.{conf,ldif}
+chown   -v  root:ldap ${FAKEROOT}/etc/openldap/slapd.{conf,ldif}
+
+install -v -dm755 ${FAKEROOT}/usr/share/doc/openldap-2.4.44
+cp      -vfr      doc/{drafts,rfc,guide} \
+                  ${FAKEROOT}/usr/share/doc/openldap-2.4.44
+
+includeBootscript slapd
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+groupadd -g 83 ldap
+useradd  -c "OpenLDAP Daemon Owner" \
+         -d /var/lib/openldap -u 83 \
+         -g ldap -s /bin/false ldap
+
+###################################################
+}; postinst() { # POST-INSTALLATION CONFIGURATION #
+###################################################
+
+/etc/rc.d/init.d/slapd start
+
+ldapsearch -x -b '' -s base '(objectclass=*)' namingContexts
+
+#################
+} # END OF FILE #
+#################
+

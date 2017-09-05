@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://perso.wanadoo.fr/sebastien.godard/sysstat-11.5.5.tar.xz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="f6072bcfd5d2b02f033722f863171d0f
+            b4f1623b69c67f10e67ca610ceee56b4"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sa_lib_dir=/usr/lib/sa    \
+sa_dir=/var/log/sa        \
+conf_dir=/etc/sysconfig   \
+./configure --prefix=/usr \
+            --disable-file-attr
+make
+
+make DESTDIR=${FAKEROOT} install
+
+includeBootscript sysstat
+
+#################
+} # END OF FILE #
+#################
+

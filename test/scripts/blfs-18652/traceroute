@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://downloads.sourceforge.net/traceroute/traceroute-2.1.0.tar.gz"
+MD5SUMLIST="84d329d67abc3fb83fc8cb12aeaddaba"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+make
+
+make DESTDIR=${FAKEROOT} prefix=/usr install
+mv ${FAKEROOT}/usr/bin/traceroute ${FAKEROOT}/bin
+ln -sv -f traceroute ${FAKEROOT}/bin/traceroute6
+ln -sv -f traceroute.8 ${FAKEROOT}/usr/share/man/man8/traceroute6.8
+rm -fv ${FAKEROOT}/usr/share/man/man1/traceroute.1
+
+#################
+} # END OF FILE #
+#################
+

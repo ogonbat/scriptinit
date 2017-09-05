@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# The instructions in this file are extracted from
+# 'Beyond Linux From Scratch' (2017-04-29 / r18652) but are modified for use
+# with LFScript 4 which installs the software to a fake root directory.
+#
+# Beyond Linux From Scratch is released under the MIT license.
+# Copyright (C) 2001-2017, The BLFS Development Team
+
+WGETLIST="http://ftp.de.debian.org/debian/pool/main/a/at/at_3.1.20.orig.tar.gz
+          http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20170225.tar.xz"
+MD5SUMLIST="e7bd7b785b2cbb17e133d6bdc0fb099e
+            b4f1623b69c67f10e67ca610ceee56b4"
+REQUIRES="server-mail"
+TAGS="preinst"
+
+###############################################
+installation() { # INSTALLING SYSTEM SOFTWARE #
+###############################################
+
+sed -i '/docdir/s/=.*/= @docdir@/' Makefile.in
+
+autoreconf
+
+./configure --with-daemon_username=atd        \
+            --with-daemon_groupname=atd       \
+            SENDMAIL=/usr/sbin/sendmail
+
+make -j1
+
+make DESTDIR=${FAKEROOT} install \
+        docdir=/usr/share/doc/at-3.1.20 \
+      atdocdir=/usr/share/doc/at-3.1.20 
+
+includeBootscript atd
+
+#################################################
+}; preinst() { # PRE-INSTALLATION CONFIGURATION #
+#################################################
+
+groupadd -g 17 atd
+useradd -d /dev/null -c "atd daemon" -g atd -s /bin/false -u 17 atd
+mkdir -p /var/spool/cron
+
+#################
+} # END OF FILE #
+#################
+

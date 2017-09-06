@@ -120,44 +120,37 @@ fi
 mkdir -v $LFS/scripts
 cp -R scripts/basesystem/* build/scripts
 
-chroot "$LFS" /tools/bin/env -i \
-    HOME=/root                  \
-    TERM="$TERM"                \
-    PS1='\u:\w\$ '              \
-    PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin \
-    /tools/bin/bash --login +h
-
 echo "Create CHROOT Directories"
 
-mkdir -pv /{bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
-mkdir -pv /{media/{floppy,cdrom},sbin,srv,var}
-install -dv -m 0750 /root
-install -dv -m 1777 /tmp /var/tmp
-mkdir -pv /usr/{,local/}{bin,include,lib,sbin,src}
-mkdir -pv /usr/{,local/}share/{color,dict,doc,info,locale,man}
-mkdir -v  /usr/{,local/}share/{misc,terminfo,zoneinfo}
-mkdir -v  /usr/libexec
-mkdir -pv /usr/{,local/}share/man/man{1..8}
+mkdir -pv ${LFS}/{bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
+mkdir -pv ${LFS}/{media/{floppy,cdrom},sbin,srv,var}
+install -dv -m 0750 ${LFS}/root
+install -dv -m 1777 ${LFS}/tmp ${LFS}/var/tmp
+mkdir -pv ${LFS}/usr/{,local/}{bin,include,lib,sbin,src}
+mkdir -pv ${LFS}/usr/{,local/}share/{color,dict,doc,info,locale,man}
+mkdir -v  ${LFS}/usr/{,local/}share/{misc,terminfo,zoneinfo}
+mkdir -v  ${LFS}/usr/libexec
+mkdir -pv ${LFS}/usr/{,local/}share/man/man{1..8}
 
 case $(uname -m) in
- x86_64) mkdir -v /lib64 ;;
+ x86_64) mkdir -v ${LFS}/lib64 ;;
 esac
 
-mkdir -v /var/{log,mail,spool}
-ln -sv /run /var/run
-ln -sv /run/lock /var/lock
-mkdir -pv /var/{opt,cache,lib/{color,misc,locate},local}
+mkdir -v ${LFS}/var/{log,mail,spool}
+ln -sv ${LFS}/run ${LFS}/var/run
+ln -sv ${LFS}/run/lock ${LFS}/var/lock
+mkdir -pv ${LFS}/var/{opt,cache,lib/{color,misc,locate},local}
 
-ln -sv /tools/bin/{bash,cat,dd,echo,ln,pwd,rm,stty} /bin
-ln -sv /tools/bin/{install,perl} /usr/bin
-ln -sv /tools/lib/libgcc_s.so{,.1} /usr/lib
-ln -sv /tools/lib/libstdc++.{a,so{,.6}} /usr/lib
-sed 's/tools/usr/' /tools/lib/libstdc++.la > /usr/lib/libstdc++.la
-ln -sv bash /bin/sh
+ln -sv /tools/bin/{bash,cat,dd,echo,ln,pwd,rm,stty} ${LFS}/bin
+ln -sv /tools/bin/{install,perl} ${LFS}/usr/bin
+ln -sv /tools/lib/libgcc_s.so{,.1} ${LFS}/usr/lib
+ln -sv /tools/lib/libstdc++.{a,so{,.6}} ${LFS}/usr/lib
+sed 's/tools/usr/' /tools/lib/libstdc++.la > ${LFS}/usr/lib/libstdc++.la
+#ln -sv bash /bin/sh
 
-ln -sv /proc/self/mounts /etc/mtab
+ln -sv ${LFS}/proc/self/mounts ${LFS}/etc/mtab
 
-cat > /etc/passwd << "EOF"
+cat > ${LFS}/etc/passwd << "EOF"
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/dev/null:/bin/false
 daemon:x:6:6:Daemon User:/dev/null:/bin/false
@@ -165,7 +158,7 @@ messagebus:x:18:18:D-Bus Message Daemon User:/var/run/dbus:/bin/false
 nobody:x:99:99:Unprivileged User:/dev/null:/bin/false
 EOF
 
-cat > /etc/group << "EOF"
+cat > ${LFS}/etc/group << "EOF"
 root:x:0:
 bin:x:1:daemon
 sys:x:2:
@@ -191,8 +184,7 @@ nogroup:x:99:
 users:x:999:
 EOF
 
-exec /tools/bin/bash --login +h
-cd /scripts
+cd ${LFS}/scripts
 
 echo "Install Linux"
 source linux.sh 1>&1

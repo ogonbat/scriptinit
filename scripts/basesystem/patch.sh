@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/patch-2.7.5.tar.xz -C /sources
+tar -xf $LFS/sources/patch-2.7.5.tar.xz -C $LFS/sources
 
-cd /sources/patch-2.7.5
+cd $LFS/sources/patch-2.7.5
 
 ./configure --prefix=/usr
 
 make
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf patch-2.7.5
 
-cd /scripts
+cd $LFS/scripts

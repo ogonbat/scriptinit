@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/findutils-4.6.0.tar.gz -C /sources
+tar -xf $LFS/sources/findutils-4.6.0.tar.gz -C $LFS/sources
 
-cd /sources/findutils-4.6.0
+cd $LFS/sources/findutils-4.6.0
 
 sed -i 's/test-lock..EXEEXT.//' tests/Makefile.in
 
@@ -10,12 +10,12 @@ sed -i 's/test-lock..EXEEXT.//' tests/Makefile.in
 
 make
 
-make install
-mv -v /usr/bin/find /bin
-sed -i 's|find:=${BINDIR}|find:=/bin|' /usr/bin/updatedb
+make DESTDIR=$LFS install
+mv -v $LFS/usr/bin/find $LFS/bin
+sed -i 's|find:=${BINDIR}|find:=/bin|' $LFS/usr/bin/updatedb
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf findutils-4.6.0
 
-cd /scripts
+cd $LFS/scripts

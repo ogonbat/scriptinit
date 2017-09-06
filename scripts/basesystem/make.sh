@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/make-4.2.1.tar.bz2 -C /sources
+tar -xf $LFS/sources/make-4.2.1.tar.bz2 -C $LFS/sources
 
-cd /sources/make-4.2.1
+cd $LFS/sources/make-4.2.1
 
 ./configure --prefix=/usr
 
 make
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf make-4.2.1
 
-cd /scripts
+cd $LFS/scripts

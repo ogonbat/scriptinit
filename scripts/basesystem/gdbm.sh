@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/gdbm-1.13.tar.gz -C /sources
+tar -xf $LFS/sources/gdbm-1.13.tar.gz -C $LFS/sources
 
-cd /sources/gdbm-1.13
+cd $LFS/sources/gdbm-1.13
 
 ./configure --prefix=/usr \
             --disable-static \
@@ -10,10 +10,10 @@ cd /sources/gdbm-1.13
 
 make
 
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf gdbm-1.13
 
-cd /scripts
+cd $LFS/scripts

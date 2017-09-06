@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/mpfr-3.1.5.tar.xz -C /sources
+tar -xf $LFS/sources/mpfr-3.1.5.tar.xz -C $LFS/sources
 
-cd /sources/mpfr-3.1.5
+cd $LFS/sources/mpfr-3.1.5
 
 ./configure --prefix=/usr        \
             --disable-static     \
@@ -12,11 +12,11 @@ cd /sources/mpfr-3.1.5
 make
 make html
 
-make install
-make install-html
+make DESTDIR=$LFS install
+make DESTDIR=$LFS install-html
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf mpfr-3.1.5
 
-cd /scripts
+cd $LFS/scripts

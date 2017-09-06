@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/man-pages-4.12.tar.xz -C /sources
+tar -xf $LFS/sources/man-pages-4.12.tar.xz -C $LFS/sources
 
-cd /sources/man-pages-4.12
+cd $LFS/sources/man-pages-4.12
 
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf man-pages-4.12
 
-cd /scripts
+cd $LFS/scripts

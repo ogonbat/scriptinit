@@ -102,6 +102,7 @@ strip --strip-debug /tools/lib/*
 rm -rf /tools/{,share}/{info,man,doc}
 
 
+#chroot env
 echo "Prepare the BaseSystem"
 mkdir -pv $LFS/{dev,proc,sys,run}
 mknod -m 600 $LFS/dev/console c 5 1
@@ -122,35 +123,35 @@ cp -R scripts/basesystem/* build/scripts
 
 echo "Create CHROOT Directories"
 
-mkdir -pv ${LFS}/{bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
-mkdir -pv ${LFS}/{media/{floppy,cdrom},sbin,srv,var}
-install -dv -m 0750 ${LFS}/root
-install -dv -m 1777 ${LFS}/tmp ${LFS}/var/tmp
-mkdir -pv ${LFS}/usr/{,local/}{bin,include,lib,sbin,src}
-mkdir -pv ${LFS}/usr/{,local/}share/{color,dict,doc,info,locale,man}
-mkdir -v  ${LFS}/usr/{,local/}share/{misc,terminfo,zoneinfo}
-mkdir -v  ${LFS}/usr/libexec
-mkdir -pv ${LFS}/usr/{,local/}share/man/man{1..8}
+mkdir -pv $LFS/{bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
+mkdir -pv $LFS/{media/{floppy,cdrom},sbin,srv,var}
+install -dv -m 0750 $LFS/root
+install -dv -m 1777 $LFS/tmp $LFS/var/tmp
+mkdir -pv $LFS/usr/{,local/}{bin,include,lib,sbin,src}
+mkdir -pv $LFS/usr/{,local/}share/{color,dict,doc,info,locale,man}
+mkdir -v  $LFS/usr/{,local/}share/{misc,terminfo,zoneinfo}
+mkdir -v  $LFS/usr/libexec
+mkdir -pv $LFS/usr/{,local/}share/man/man{1..8}
 
 case $(uname -m) in
- x86_64) mkdir -v ${LFS}/lib64 ;;
+ x86_64) mkdir -v $LFS/lib64 ;;
 esac
 
-mkdir -v ${LFS}/var/{log,mail,spool}
-ln -sv ${LFS}/run ${LFS}/var/run
-ln -sv ${LFS}/run/lock ${LFS}/var/lock
-mkdir -pv ${LFS}/var/{opt,cache,lib/{color,misc,locate},local}
+mkdir -v $LFS/var/{log,mail,spool}
+ln -sv $LFS/run $LFS/var/run
+ln -sv $LFS/run/lock $LFS/var/lock
+mkdir -pv $LFS/var/{opt,cache,lib/{color,misc,locate},local}
 
-ln -sv /tools/bin/{bash,cat,dd,echo,ln,pwd,rm,stty} ${LFS}/bin
-ln -sv /tools/bin/{install,perl} ${LFS}/usr/bin
-ln -sv /tools/lib/libgcc_s.so{,.1} ${LFS}/usr/lib
-ln -sv /tools/lib/libstdc++.{a,so{,.6}} ${LFS}/usr/lib
-sed 's/tools/usr/' /tools/lib/libstdc++.la > ${LFS}/usr/lib/libstdc++.la
+ln -sv /tools/bin/{bash,cat,dd,echo,ln,pwd,rm,stty} $LFS/bin
+ln -sv /tools/bin/{install,perl} $LFS/usr/bin
+ln -sv /tools/lib/libgcc_s.so{,.1} $LFS/usr/lib
+ln -sv /tools/lib/libstdc++.{a,so{,.6}} $LFS/usr/lib
+sed 's/tools/usr/' /tools/lib/libstdc++.la > $LFS/usr/lib/libstdc++.la
 #ln -sv bash /bin/sh
 
-ln -sv ${LFS}/proc/self/mounts ${LFS}/etc/mtab
+ln -sv $LFS/proc/self/mounts $LFS/etc/mtab
 
-cat > ${LFS}/etc/passwd << "EOF"
+cat > $LFS/etc/passwd << "EOF"
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/dev/null:/bin/false
 daemon:x:6:6:Daemon User:/dev/null:/bin/false
@@ -158,7 +159,7 @@ messagebus:x:18:18:D-Bus Message Daemon User:/var/run/dbus:/bin/false
 nobody:x:99:99:Unprivileged User:/dev/null:/bin/false
 EOF
 
-cat > ${LFS}/etc/group << "EOF"
+cat > $LFS/etc/group << "EOF"
 root:x:0:
 bin:x:1:daemon
 sys:x:2:
@@ -184,7 +185,7 @@ nogroup:x:99:
 users:x:999:
 EOF
 
-cd ${LFS}/scripts
+cd $LFS/scripts
 
 echo "Install Linux"
 source linux.sh 1>&1
@@ -198,17 +199,11 @@ mv -v /tools/$(uname -m)-pc-linux-gnu/bin/{ld,ld-old}
 mv -v /tools/bin/{ld-new,ld}
 ln -sv /tools/bin/ld /tools/$(uname -m)-pc-linux-gnu/bin/ld
 
-gcc -dumpspecs | sed -e 's@/tools@@g'                   \
+/tools/bin/gcc -dumpspecs | sed -e 's@/tools@@g'                   \
     -e '/\*startfile_prefix_spec:/{n;s@.*@/usr/lib/ @}' \
     -e '/\*cpp:/{n;s@$@ -isystem /usr/include@}' >      \
     `dirname $(gcc --print-libgcc-file-name)`/specs
 
-echo 'int main(){}' > dummy.c
-cc dummy.c -v -Wl,--verbose &> dummy.log
-readelf -l a.out | grep ': /lib'
-
-
-rm -v dummy.c a.out dummy.log
 
 echo "Install Zlib"
 source zlib.sh
@@ -258,12 +253,6 @@ echo "Install Grep"
 source grep.sh 1>&1
 echo "Install Bash"
 source bash.sh 1>&1
-
-echo "Executew New Installed Bash"
-logout
-exec /bin/bash --login +h
-
-
 echo "Install Libtool"
 source libtool.sh
 echo "Install GDBM"
@@ -342,7 +331,7 @@ source vim.sh 1>&1
 echo "Stripping CHROOT"
 save_lib="ld-2.26.so libc-2.26.so libpthread-2.26.so libthread_db-1.0.so"
 
-cd /lib
+cd $LFS/lib
 
 for LIB in $save_lib; do
     objcopy --only-keep-debug $LIB $LIB.dbg
@@ -354,7 +343,7 @@ save_usrlib="libquadmath.so.0.0.0 libstdc++.so.6.0.24
              libmpx.so.2.0.1 libmpxwrappers.so.2.0.1 libitm.so.1.0.0
              libcilkrts.so.5.0.0 libatomic.so.1.2.0"
 
-cd /usr/lib
+cd $LFS/usr/lib
 
 for LIB in $save_usrlib; do
     objcopy --only-keep-debug $LIB $LIB.dbg
@@ -364,30 +353,24 @@ done
 
 unset LIB save_lib save_usrlib
 
-logout
 rm -rf /tmp/*
 
 
-chroot "$LFS" /usr/bin/env -i              \
-    HOME=/root TERM="$TERM" PS1='\u:\w\$ ' \
-    PATH=/bin:/usr/bin:/sbin:/usr/sbin     \
-    /bin/bash --login
+rm -f $LFS/usr/lib/lib{bfd,opcodes}.a
+rm -f $LFS/usr/lib/libbz2.a
+rm -f $LFS/usr/lib/lib{com_err,e2p,ext2fs,ss}.a
+rm -f $LFS/usr/lib/libltdl.a
+rm -f $LFS/usr/lib/libfl.a
+rm -f $LFS/usr/lib/libfl_pic.a
+rm -f $LFS/usr/lib/libz.a
 
-rm -f /usr/lib/lib{bfd,opcodes}.a
-rm -f /usr/lib/libbz2.a
-rm -f /usr/lib/lib{com_err,e2p,ext2fs,ss}.a
-rm -f /usr/lib/libltdl.a
-rm -f /usr/lib/libfl.a
-rm -f /usr/lib/libfl_pic.a
-rm -f /usr/lib/libz.a
-
-cd /scripts
+cd $LFS/scripts
 echo "Install Bootscript"
 source bootscript.sh
 
-bash /lib/udev/init-net-rules.sh
+bash $LFS/lib/udev/init-net-rules.sh
 
-cat > /etc/resolv.conf << EOF
+cat > $LFS/etc/resolv.conf << EOF
 # Begin /etc/resolv.conf
 
 # (*) Use Google's Public IPv4 DNS
@@ -397,7 +380,7 @@ nameserver 8.8.4.4
 # End /etc/resolv.conf
 EOF
 
-cat > /etc/hosts << EOF
+cat > $LFS/etc/hosts << EOF
 # Begin /etc/hosts
 
 # (*) Only create entries for localhost
@@ -409,7 +392,7 @@ ff02::2   ip6-allrouters
 # End /etc/hosts
 EOF
 
-cat > /etc/inittab << EOF
+cat > $LFS/etc/inittab << EOF
 # Begin /etc/inittab
 
 id:3:initdefault:
@@ -438,7 +421,7 @@ su:S016:once:/sbin/sulogin
 # End /etc/inittab
 EOF
 
-cat > /etc/sysconfig/rc.site << "EOF"
+cat > $LFS/etc/sysconfig/rc.site << "EOF"
 # rc.site
 # Optional parameters for boot scripts.
 
@@ -533,14 +516,14 @@ FONT="lat0-16 -m 8859-15"
 
 EOF
 
-mkdir -pv /etc/profile.d
+mkdir -pv $LFS/etc/profile.d
 
-cat > /etc/profile.d/i18n.sh << EOF
+cat > $LFS/etc/profile.d/i18n.sh << EOF
 # Set up i18n variables
 export LANG="en_US.UTF-8"
 EOF
 
-cat > /etc/profile << EOF
+cat > $LFS/etc/profile << EOF
 # Minimal profile, which loads configuration from /etc/profile.d
 for script in /etc/profile.d/*.sh ; do
   if [ -r ${script} ] ; then
@@ -549,7 +532,7 @@ for script in /etc/profile.d/*.sh ; do
 done
 EOF
 
-cat > /etc/inputrc << EOF
+cat > $LFS/etc/inputrc << EOF
 # Begin /etc/inputrc
 # Modified by Chris Lynn <roryo@roryo.dynup.net>
 
@@ -593,7 +576,7 @@ set bell-style none
 # End /etc/inputrc
 EOF
 
-cat > /etc/shells << EOF
+cat > $LFS/etc/shells << EOF
 # Begin /etc/shells
 
 /bin/sh
@@ -602,7 +585,7 @@ cat > /etc/shells << EOF
 # End /etc/shells
 EOF
 
-cat > /etc/fstab << EOF
+cat > $LFS/etc/fstab << EOF
 # Begin /etc/fstab
 
 # file system  mount-point  type     options             dump  fsck
@@ -622,16 +605,15 @@ devtmpfs       /dev         devtmpfs mode=0755,nosuid    0     0
 # End /etc/fstab
 EOF
 
-echo 0.0.1 > /etc/mrx-release
+echo 0.0.1 > $LFS/etc/mrx-release
 
-cat > /etc/lsb-release << "EOF"
+cat > $LFS/etc/lsb-release << "EOF"
 DISTRIB_ID="Minerox"
 DISTRIB_RELEASE="0.0.1"
 DISTRIB_CODENAME="Andrea Mucci aKa cingusoft"
 DISTRIB_DESCRIPTION="Minerox OS for Miners"
 EOF
 
-logout
 umount -v $LFS/dev/pts
 umount -v $LFS/dev
 umount -v $LFS/run

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/util-linux-2.30.1.tar.xz -C /sources
+tar -xf $LFS/sources/util-linux-2.30.1.tar.xz -C $LFS/sources
 
-cd /sources/util-linux-2.30.1
-mkdir -pv /var/lib/hwclock
+cd $LFS/sources/util-linux-2.30.1
+mkdir -pv $LFS/var/lib/hwclock
 
 ./configure ADJTIME_PATH=/var/lib/hwclock/adjtime   \
             --docdir=/usr/share/doc/util-linux-2.30.1 \
@@ -22,10 +22,10 @@ mkdir -pv /var/lib/hwclock
 make
 chown -Rv nobody .
 
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf util-linux-2.30.1
 
-cd /scripts
+cd $LFS/scripts

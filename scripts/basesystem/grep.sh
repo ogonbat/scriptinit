@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/grep-3.1.tar.xz -C /sources
+tar -xf $LFS/sources/grep-3.1.tar.xz -C $LFS/sources
 
-cd /sources/grep-3.1
+cd $LFS/sources/grep-3.1
 
 ./configure --prefix=/usr --bindir=/bin
 
 make
 
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf grep-3.1
 
-cd /scripts
+cd $LFS/scripts

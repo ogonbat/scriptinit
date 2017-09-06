@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/sysvinit-2.88dsf.tar.bz2 -C /sources
+tar -xf $LFS/sources/sysvinit-2.88dsf.tar.bz2 -C $LFS/sources
 
-cd /sources/sysvinit-2.88dsf
+cd $LFS/sources/sysvinit-2.88dsf
 
 patch -Np1 -i ../sysvinit-2.88dsf-consolidated-1.patch
 
 make -C src
-make -C src install
+make ROOT=$LFS -C src install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf sysvinit-2.88dsf
 
-cd /scripts
+cd $LFS/scripts

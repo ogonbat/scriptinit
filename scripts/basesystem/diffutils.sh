@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/diffutils-3.6.tar.xz -C /sources
+tar -xf $LFS/sources/diffutils-3.6.tar.xz -C $LFS/sources
 
-cd /sources/diffutils-3.6
+cd $LFS/sources/diffutils-3.6
 
 ./configure --prefix=/usr
 
 make
 
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf diffutils-3.6
 
-cd /scripts
+cd $LFS/scripts

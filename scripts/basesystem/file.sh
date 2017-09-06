@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/file-5.31.tar.gz -C /sources
+tar -xf $LFS/sources/file-5.31.tar.gz -C $LFS/sources
 
-cd /sources/file-5.31
+cd $LFS/sources/file-5.31
 
 ./configure --prefix=/usr
 
 make
 
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf file-5.31
 
-cd /scripts
+cd $LFS/scripts

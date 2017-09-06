@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/psmisc-23.1.tar.xz -C /sources
+tar -xf $LFS/sources/psmisc-23.1.tar.xz -C $LFS/sources
 
-cd /sources/psmisc-23.1
+cd $LFS/sources/psmisc-23.1
 
 ./configure --prefix=/usr
 
 make
 
-make install
+make DESTDIR=$LFS install
 
-mv -v /usr/bin/fuser   /bin
-mv -v /usr/bin/killall /bin
+mv -v $LFS/usr/bin/fuser   $LFS/bin
+mv -v $LFS/usr/bin/killall $LFS/bin
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf psmisc-23.1
 
-cd /scripts
+cd $LFS/scripts

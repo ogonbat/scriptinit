@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/binutils-2.29.tar.bz2 -C /sources
+tar -xf $LFS/sources/binutils-2.29.tar.bz2 -C $LFS/sources
 
-cd /sources/binutils-2.29
+cd $LFS/sources/binutils-2.29
 
 expect -c "spawn ls"
 
@@ -21,10 +21,10 @@ cd       build
 
 make tooldir=/usr
 
-make tooldir=/usr install
+make DESTDIR=$LFS tooldir=/usr install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf binutils-2.29
 
-cd /scripts
+cd $LFS/scripts

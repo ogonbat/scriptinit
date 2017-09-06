@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/gcc-7.2.0.tar.xz -C /sources
+tar -xf $LFS/sources/gcc-7.2.0.tar.xz -C $LFS/sources
 
-cd /sources/gcc-7.2.0
+cd $LFS/sources/gcc-7.2.0
 
 case $(uname -m) in
   x86_64)
@@ -11,7 +11,7 @@ case $(uname -m) in
   ;;
 esac
 
-rm -f /usr/lib/gcc
+rm -f $LFS/usr/lib/gcc
 
 mkdir -v build
 cd       build
@@ -25,18 +25,18 @@ SED=sed                               \
 
 make
 
-make install
+make DESTDIR=$LFS install
 
 ln -sv ../usr/bin/cpp /lib
-ln -sv gcc /usr/bin/cc
-install -v -dm755 /usr/lib/bfd-plugins
+ln -sv gcc $LFS/usr/bin/cc
+install -v -dm755 $LFS/usr/lib/bfd-plugins
 ln -sfv ../../libexec/gcc/$(gcc -dumpmachine)/7.2.0/liblto_plugin.so \
-        /usr/lib/bfd-plugins/
-mkdir -pv /usr/share/gdb/auto-load/usr/lib
-mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
+        $LFS/usr/lib/bfd-plugins/
+mkdir -pv $LFS/usr/share/gdb/auto-load/usr/lib
+mv -v $LFS/usr/lib/*gdb.py $LFS/usr/share/gdb/auto-load/usr/lib
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf gcc-7.2.0
 
-cd /scripts
+cd $LFS/scripts

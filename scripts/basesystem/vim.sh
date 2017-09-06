@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/vim-8.0.586.tar.bz2 -C /sources
+tar -xf $LFS/sources/vim-8.0.586.tar.bz2 -C $LFS/sources
 
-cd /sources/vim80
+cd $LFS/sources/vim80
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 sed -i '/call/{s/split/xsplit/;s/303/492/}' src/testdir/test_recover.vim
 
@@ -11,15 +11,15 @@ sed -i '/call/{s/split/xsplit/;s/303/492/}' src/testdir/test_recover.vim
 
 make
 
-make install
-ln -sv vim /usr/bin/vi
-for L in  /usr/share/man/{,*/}man1/vim.1; do
+make DESTDIR=$LFS install
+ln -sv vim $LFS/usr/bin/vi
+for L in  $LFS/usr/share/man/{,*/}man1/vim.1; do
     ln -sv vim.1 $(dirname $L)/vi.1
 done
 
-ln -sv ../vim/vim80/doc /usr/share/doc/vim-8.0.586
+ln -sv ../vim/vim80/doc $LFS/usr/share/doc/vim-8.0.586
 
-cat > /etc/vimrc << "EOF"
+cat > $LFS/etc/vimrc << "EOF"
 " Begin /etc/vimrc
 
 set nocompatible
@@ -36,8 +36,8 @@ EOF
 
 touch ~/.vimrc
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf vim80
 
-cd /scripts
+cd $LFS/scripts

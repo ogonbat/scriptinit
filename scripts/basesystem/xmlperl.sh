@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/XML-Parser-2.44.tar.gz -C /sources
+tar -xf $LFS/sources/XML-Parser-2.44.tar.gz -C $LFS/sources
 
-cd /sources/XML-Parser-2.44
+cd $LFS/sources/XML-Parser-2.44
 
 perl Makefile.PL
 
 make
 
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf XML-Parser-2.44
 
-cd /scripts
+cd $LFS/scripts

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/gmp-6.1.2.tar.xz -C /sources
+tar -xf $LFS/sources/gmp-6.1.2.tar.xz -C $LFS/sources
 
-cd /sources/gmp-6.1.2
+cd $LFS/sources/gmp-6.1.2
 
 ./configure --prefix=/usr    \
             --enable-cxx     \
@@ -12,11 +12,11 @@ cd /sources/gmp-6.1.2
 make
 make html
 
-make install
-make install-html
+make DESTDIR=$LFS install
+make DESTDIR=$LFS install-html
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf gmp-6.1.2
 
-cd /scripts
+cd $LFS/scripts

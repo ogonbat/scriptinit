@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/less-487.tar.gz -C /sources
+tar -xf $LFS/sources/less-487.tar.gz -C $LFS/sources
 
-cd /sources/less-487
+cd $LFS/sources/less-487
 
 ./configure --prefix=/usr --sysconfdir=/etc
 
 make
 
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf less-487
 
-cd /scripts
+cd $LFS/scripts

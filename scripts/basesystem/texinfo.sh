@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
 
-tar -xf /sources//texinfo-6.4.tar.xz -C /sources
+tar -xf $LFS/sources//texinfo-6.4.tar.xz -C $LFS/sources
 
-cd /sources/texinfo-6.4
+cd $LFS/sources/texinfo-6.4
 
 ./configure --prefix=/usr --disable-static
 
 
 make
 
-make install
-make TEXMF=/usr/share/texmf install-tex
-pushd /usr/share/info
+make DESTDIR=$LFS install
+make DESTDIR=$LFS TEXMF=/usr/share/texmf install-tex
+pushd $LFS/usr/share/info
 rm -v dir
 for f in *
   do install-info $f dir 2>/dev/null
 done
 popd
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf texinfo-6.4
 
-cd /scripts
+cd $LFS/scripts

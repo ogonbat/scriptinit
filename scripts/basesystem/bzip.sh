@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/bzip2-1.0.6.tar.gz -C /sources
+tar -xf $LFS/sources/bzip2-1.0.6.tar.gz -C $LFS/sources
 
-cd /sources/bzip2-1.0.6
+cd $LFS/sources/bzip2-1.0.6
 
 patch -Np1 -i ../bzip2-1.0.6-install_docs-1.patch
 
@@ -15,18 +15,18 @@ make clean
 
 make
 
-make PREFIX=/usr install
+make PREFIX=$LFS/usr install
 
-cp -v bzip2-shared /bin/bzip2
-cp -av libbz2.so* /lib
-ln -sv ../../lib/libbz2.so.1.0 /usr/lib/libbz2.so
-rm -v /usr/bin/{bunzip2,bzcat,bzip2}
-ln -sv bzip2 /bin/bunzip2
-ln -sv bzip2 /bin/bzcat
+cp -v bzip2-shared $LFS/bin/bzip2
+cp -av libbz2.so* $LFS/lib
+ln -sv ../../lib/libbz2.so.1.0 $LFS/usr/lib/libbz2.so
+rm -v $LFS/usr/bin/{bunzip2,bzcat,bzip2}
+ln -sv bzip2 $LFS/bin/bunzip2
+ln -sv bzip2 $LFS/bin/bzcat
 
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf bzip2-1.0.6
 
-cd /scripts
+cd $LFS/scripts

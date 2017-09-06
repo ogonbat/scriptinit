@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/gzip-1.8.tar.xz -C /sources
+tar -xf $LFS/sources/gzip-1.8.tar.xz -C $LFS/sources
 
-cd /sources/gzip-1.8
+cd $LFS/sources/gzip-1.8
 
 ./configure --prefix=/usr
 
 make
 
-make install
-mv -v /usr/bin/gzip /bin
-cd /sources
+make DESTDIR=$LFS install
+mv -v $LFS/usr/bin/gzip $LFS/bin
+cd $LFS/sources
 
 rm -Rf gzip-1.8
 
-cd /scripts
+cd $LFS/scripts

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/iproute2-4.12.0.tar.xz -C /sources
+tar -xf $LFS/sources/iproute2-4.12.0.tar.xz -C $LFS/sources
 
-cd /sources/iproute2-4.12.0
+cd $LFS/sources/iproute2-4.12.0
 
 sed -i /ARPD/d Makefile
 sed -i 's/arpd.8//' man/man8/Makefile
@@ -12,10 +12,10 @@ sed -i 's/m_ipt.o//' tc/Makefile
 
 make
 
-make DOCDIR=/usr/share/doc/iproute2-4.12.0 install
+make DESTDIR=$LFS DOCDIR=/usr/share/doc/iproute2-4.12.0 install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf iproute2-4.12.0
 
-cd /scripts
+cd $LFS/scripts

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/flex-2.6.4.tar.gz -C /sources
+tar -xf $LFS/sources/flex-2.6.4.tar.gz -C $LFS/sources
 
-cd /sources/flex-2.6.4
+cd $LFS/sources/flex-2.6.4
 sed -i "/math.h/a #include <malloc.h>" src/flexdef.h
 
 HELP2MAN=/tools/bin/true \
@@ -10,11 +10,11 @@ HELP2MAN=/tools/bin/true \
 
 make
 
-make install
-ln -sv flex /usr/bin/lex
+make DESTDIR=$LFS install
+ln -sv flex $LFS/usr/bin/lex
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf flex-2.6.4
 
-cd /scripts
+cd $LFS/scripts

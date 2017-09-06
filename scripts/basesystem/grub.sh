@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/grub-2.02.tar.xz -C /sources
+tar -xf $LFS/sources/grub-2.02.tar.xz -C $LFS/sources
 
-cd /sources/grub-2.02
+cd $LFS/sources/grub-2.02
 
 ./configure --prefix=/usr          \
             --sbindir=/sbin        \
@@ -12,10 +12,10 @@ cd /sources/grub-2.02
 
 make
 
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf grub-2.02
 
-cd /scripts
+cd $LFS/scripts

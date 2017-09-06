@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/tar-1.29.tar.xz -C /sources
+tar -xf $LFS/sources/tar-1.29.tar.xz -C $LFS/sources
 
-cd /sources/tar-1.29
+cd $LFS/sources/tar-1.29
 
 FORCE_UNSAFE_CONFIGURE=1  \
 ./configure --prefix=/usr \
@@ -11,11 +11,11 @@ FORCE_UNSAFE_CONFIGURE=1  \
 
 make
 
-make install
-make -C doc install-html docdir=/usr/share/doc/tar-1.29
+make DESTDIR=$LFS install
+make DESTDIR=$LFS -C doc install-html docdir=/usr/share/doc/tar-1.29
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf tar-1.29
 
-cd /scripts
+cd $LFS/scripts

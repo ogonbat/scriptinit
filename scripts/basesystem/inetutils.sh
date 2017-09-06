@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/inetutils-1.9.4.tar.xz -C /sources
+tar -xf $LFS/sources/inetutils-1.9.4.tar.xz -C $LFS/sources
 
-cd /sources/inetutils-1.9.4
+cd $LFS/sources/inetutils-1.9.4
 
 ./configure --prefix=/usr        \
             --localstatedir=/var \
@@ -16,12 +16,12 @@ cd /sources/inetutils-1.9.4
 
 make
 
-make install
-mv -v /usr/bin/{hostname,ping,ping6,traceroute} /bin
-mv -v /usr/bin/ifconfig /sbin
+make DESTDIR=$LFS install
+mv -v $LFS/usr/bin/{hostname,ping,ping6,traceroute} $LFS/bin
+mv -v $LFS/usr/bin/ifconfig $LFS/sbin
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf inetutils-1.9.4
 
-cd /scripts
+cd $LFS/scripts

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/e2fsprogs-1.43.5.tar.gz -C /sources
+tar -xf $LFS/sources/e2fsprogs-1.43.5.tar.gz -C $LFS/sources
 
-cd /sources/e2fsprogs-1.43.5
+cd $LFS/sources/e2fsprogs-1.43.5
 
 mkdir -v build
 cd build
@@ -24,18 +24,18 @@ make
 ln -sfv /tools/lib/lib{blk,uu}id.so.1 lib
 
 
-make install
-make install-libs
-chmod -v u+w /usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
+make DESTDIR=$LFS install
+make DESTDIR=$LFS install-libs
+chmod -v u+w $LFS/usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
 
-gunzip -v /usr/share/info/libext2fs.info.gz
-install-info --dir-file=/usr/share/info/dir /usr/share/info/libext2fs.info
+gunzip -v $LFS/usr/share/info/libext2fs.info.gz
+install-info --dir-file=$LFS/usr/share/info/dir $LFS/usr/share/info/libext2fs.info
 makeinfo -o      doc/com_err.info ../lib/et/com_err.texinfo
-install -v -m644 doc/com_err.info /usr/share/info
-install-info --dir-file=/usr/share/info/dir /usr/share/info/com_err.info
+install -v -m644 doc/com_err.info $LFS/usr/share/info
+install-info --dir-file=$LFS/usr/share/info/dir $LFS/usr/share/info/com_err.info
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf e2fsprogs-1.43.5
 
-cd /scripts
+cd $LFS/scripts

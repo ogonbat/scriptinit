@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/perl-5.26.0.tar.xz -C /sources
+tar -xf $LFS/sources/perl-5.26.0.tar.xz -C $LFS/sources
 
-cd /sources/perl-5.26.0
+cd $LFS/sources/perl-5.26.0
 echo "127.0.0.1 localhost $(hostname)" > /etc/hosts
 export BUILD_ZLIB=False
 export BUILD_BZIP2=0
@@ -15,11 +15,11 @@ sh Configure -des -Dprefix=/usr                 \
                   -Duseshrplib                  \
                   -Dusethreads
 
-make install
+make DESTDIR=$LFS install
 unset BUILD_ZLIB BUILD_BZIP2
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf perl-5.26.0
 
-cd /scripts
+cd $LFS/scripts

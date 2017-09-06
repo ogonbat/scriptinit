@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/ncurses-6.0.tar.gz -C /sources
+tar -xf $LFS/sources/ncurses-6.0.tar.gz -C $LFS/sources
 
-cd /sources/ncurses-6.0
+cd $LFS/sources/ncurses-6.0
 
 sed -i '/LIBTOOL_INSTALL/d' c++/Makefile.in
 
@@ -16,28 +16,28 @@ sed -i '/LIBTOOL_INSTALL/d' c++/Makefile.in
 
 make
 
-make install
+make DESTDIR=$LFS install
 
-mv -v /usr/lib/libncursesw.so.6* /lib
+mv -v $LFS/usr/lib/libncursesw.so.6* $LFS/lib
 
-ln -sfv ../../lib/$(readlink /usr/lib/libncursesw.so) /usr/lib/libncursesw.so
+ln -sfv ../../lib/$(readlink $LFS/usr/lib/libncursesw.so) $LFS/usr/lib/libncursesw.so
 
 for lib in ncurses form panel menu ; do
-    rm -vf                    /usr/lib/lib${lib}.so
-    echo "INPUT(-l${lib}w)" > /usr/lib/lib${lib}.so
-    ln -sfv ${lib}w.pc        /usr/lib/pkgconfig/${lib}.pc
+    rm -vf                    $LFS/usr/lib/lib${lib}.so
+    echo "INPUT(-l${lib}w)" > $LFS/usr/lib/lib${lib}.so
+    ln -sfv ${lib}w.pc        $LFS/usr/lib/pkgconfig/${lib}.pc
 done
 
-rm -vf                     /usr/lib/libcursesw.so
-echo "INPUT(-lncursesw)" > /usr/lib/libcursesw.so
-ln -sfv libncurses.so      /usr/lib/libcurses.so
+rm -vf                     $LFS/usr/lib/libcursesw.so
+echo "INPUT(-lncursesw)" > $LFS/usr/lib/libcursesw.so
+ln -sfv libncurses.so      $LFS/usr/lib/libcurses.so
 
-mkdir -v       /usr/share/doc/ncurses-6.0
-cp -v -R doc/* /usr/share/doc/ncurses-6.0
+mkdir -v       $LFS/usr/share/doc/ncurses-6.0
+cp -v -R doc/* $LFS/usr/share/doc/ncurses-6.0
 
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf ncurses-6.0
 
-cd /scripts
+cd $LFS/scripts

@@ -1,8 +1,8 @@
-#!/usr/bin/env bash
+#!/bin/env bash
 
-tar -xf /sources/bash-4.4.tar.gz -C /sources
+tar -xf $LFS/sources/bash-4.4.tar.gz -C $LFS/sources
 
-cd /sources/bash-4.4
+cd $LFS/sources/bash-4.4
 
 patch -Np1 -i ../bash-4.4-upstream_fixes-1.patch
 
@@ -15,12 +15,12 @@ make
 
 chown -Rv nobody .
 
-make install
+make DESTDIR=$LFS install
 
-mv -vf /usr/bin/bash /bin
+mv -vf $LFS/usr/bin/bash $LFS/bin
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf bash-4.4
 
-cd /scripts
+cd $LFS/scripts

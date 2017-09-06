@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/autoconf-2.69.tar.xz -C /sources
+tar -xf $LFS/sources/autoconf-2.69.tar.xz -C $LFS/sources
 
-cd /sources/autoconf-2.69
+cd $LFS/sources/autoconf-2.69
 
 ./configure --prefix=/usr
 
 make
 
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf autoconf-2.69
 
-cd /scripts
+cd $LFS/scripts

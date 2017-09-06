@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/mpc-1.0.3.tar.gz -C /sources
+tar -xf $LFS/sources/mpc-1.0.3.tar.gz -C $LFS/sources
 
-cd /sources/mpc-1.0.3
+cd $LFS/sources/mpc-1.0.3
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -11,11 +11,11 @@ cd /sources/mpc-1.0.3
 make
 make html
 
-make install
-make install-html
+make DESTDIR=$LFS install
+make DESTDIR=$LFS install-html
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf mpc-1.0.3
 
-cd /scripts
+cd $LFS/scripts

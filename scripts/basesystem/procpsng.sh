@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/procps-ng-3.3.12.tar.xz -C /sources
+tar -xf $LFS/sources/procps-ng-3.3.12.tar.xz -C $LFS/sources
 
-cd /sources/procps-ng-3.3.12
+cd $LFS/sources/procps-ng-3.3.12
 
 ./configure --prefix=/usr                            \
             --exec-prefix=                           \
@@ -18,13 +18,13 @@ sed -i -r 's|(pmap_initname)\\\$|\1|' testsuite/pmap.test/pmap.exp
 sed -i '/set tty/d' testsuite/pkill.test/pkill.exp
 rm testsuite/pgrep.test/pgrep.exp
 
-make install
+make DESTDIR=$LFS install
 
-mv -v /usr/lib/libprocps.so.* /lib
-ln -sfv ../../lib/$(readlink /usr/lib/libprocps.so) /usr/lib/libprocps.so
+mv -v $LFS/usr/lib/libprocps.so.* $LFS/lib
+ln -sfv ../../lib/$(readlink $LFS/usr/lib/libprocps.so) $LFS/usr/lib/libprocps.so
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf procps-ng-3.3.12
 
-cd /scripts
+cd $LFS/scripts

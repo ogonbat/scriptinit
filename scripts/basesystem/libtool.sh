@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/libtool-2.4.6.tar.xz -C /sources
+tar -xf $LFS/sources/libtool-2.4.6.tar.xz -C $LFS/sources
 
-cd /sources/libtool-2.4.6
+cd $LFS/sources/libtool-2.4.6
 
 ./configure --prefix=/usr
 
 make
 
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf libtool-2.4.6
 
-cd /scripts
+cd $LFS/scripts

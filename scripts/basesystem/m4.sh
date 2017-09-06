@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/m4-1.4.18.tar.xz -C /sources
+tar -xf $LFS/sources/m4-1.4.18.tar.xz -C $LFS/sources
 
-cd /sources/m4-1.4.18
+cd $LFS/sources/m4-1.4.18
 
 ./configure --prefix=/usr
 
 make
 
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf m4-1.4.18
 
-cd /scripts
+cd $LFS/scripts

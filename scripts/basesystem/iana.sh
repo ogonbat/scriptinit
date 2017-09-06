@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/iana-etc-2.30.tar.bz2 -C /sources
+tar -xf $LFS/sources/iana-etc-2.30.tar.bz2 -C $LFS/sources
 
-cd /sources/iana-etc-2.30
+cd $LFS/sources/iana-etc-2.30
 
 make
 
-make install
+make DESTDIR=$LFS install
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf iana-etc-2.30
 
-cd /scripts
+cd $LFS/scripts

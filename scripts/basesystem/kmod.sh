@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/kmod-24.tar.xz -C /sources
+tar -xf $LFS/sources/kmod-24.tar.xz -C $LFS/sources
 
-cd /sources/kmod-24
+cd $LFS/sources/kmod-24
 
 ./configure --prefix=/usr          \
             --bindir=/bin          \
@@ -12,16 +12,16 @@ cd /sources/kmod-24
             --with-zlib
 
 make
-make install
+make DESTDIR=$LFS install
 
 for target in depmod insmod lsmod modinfo modprobe rmmod; do
-  ln -sfv ../bin/kmod /sbin/$target
+  ln -sfv ../bin/kmod $LFS/sbin/$target
 done
 
-ln -sfv kmod /bin/lsmod
+ln -sfv kmod $LFS/bin/lsmod
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf kmod-24
 
-cd /scripts
+cd $LFS/scripts

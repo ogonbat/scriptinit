@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-tar -xf /sources/sysklogd-1.5.1.tar.gz -C /sources
+tar -xf $LFS/sources/sysklogd-1.5.1.tar.gz -C $LFS/sources
 
-cd /sources/sysklogd-1.5.1
+cd $LFS/sources/sysklogd-1.5.1
 
 sed -i '/Error loading kernel symbols/{n;n;d}' ksym_mod.c
 sed -i 's/union wait/int/' syslogd.c
 ./configure --prefix=/usr
 
 make
-make BINDIR=/sbin install
+make prefix=$LFS BINDIR=$LFS/sbin install
 
-cat > /etc/syslog.conf << "EOF"
+cat > $LFS/etc/syslog.conf << "EOF"
 # Begin /etc/syslog.conf
 
 auth,authpriv.* -/var/log/auth.log
@@ -25,8 +25,8 @@ user.* -/var/log/user.log
 # End /etc/syslog.conf
 EOF
 
-cd /sources
+cd $LFS/sources
 
 rm -Rf sysklogd-1.5.1
 
-cd /scripts
+cd $LFS/scripts

@@ -27,7 +27,7 @@ make
 
 make DESTDIR=$LFS install
 
-ln -sv ../usr/bin/cpp /lib
+ln -sv ../usr/bin/cpp $LFS/lib
 ln -sv gcc $LFS/usr/bin/cc
 install -v -dm755 $LFS/usr/lib/bfd-plugins
 ln -sfv ../../libexec/gcc/$(gcc -dumpmachine)/7.2.0/liblto_plugin.so \
